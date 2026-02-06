@@ -501,7 +501,11 @@ function executeWithAPI(code, inputs) {
     
     if (runBtn) runBtn.disabled = true;
     
-    fetch('http://localhost:5000/compile', {
+    // Change this URL after deploying backend
+    const BACKEND_URL = 'https://java-editor-xcqh.onrender.com'; // Local: http://localhost:5000
+                                                                   // Deployed: https://java-editor-xcqh.onrender.com
+    
+    fetch(`${BACKEND_URL}/compile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: code, input: inputs.join('\n') })
