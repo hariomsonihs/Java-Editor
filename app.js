@@ -502,8 +502,8 @@ function executeWithAPI(code, inputs) {
     if (runBtn) runBtn.disabled = true;
     
     // Change this URL after deploying backend
-    const BACKEND_URL = 'https://java-editor-xcqh.onrender.com'; // Local: http://localhost:5000
-                                                                   // Deployed: https://java-editor-xcqh.onrender.com
+    const BACKEND_URL = 'https://java-editor-production.up.railway.app'; // Local: http://localhost:5000
+                                                                           // Deployed: https://java-editor-production.up.railway.app
     
     fetch(`${BACKEND_URL}/compile`, {
         method: 'POST',
