@@ -11,7 +11,13 @@ require(['vs/editor/editor.main'], function () {
 });
 
 function initializeEditor() {
-    editor = monaco.editor.create(document.getElementById('editor'), {
+    const editorContainer = document.getElementById('editor');
+    if (!editorContainer) {
+        console.error('Editor container not found!');
+        return;
+    }
+
+    editor = monaco.editor.create(editorContainer, {
         value: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
         language: 'java',
         theme: 'vs-dark',
@@ -36,8 +42,17 @@ function initializeEditor() {
         matchBrackets: 'always',
         autoClosingBrackets: 'always',
         autoClosingQuotes: 'always',
-        snippetSuggestions: 'top'
+        snippetSuggestions: 'top',
+        glyphMargin: false,
+        fixedOverflowWidgets: true
     });
+
+    // Force layout after creation
+    setTimeout(() => {
+        if (editor) {
+            editor.layout();
+        }
+    }, 100);
 
     editor.onDidChangeModelContent(() => {
         isEditorDirty = true;
@@ -45,7 +60,10 @@ function initializeEditor() {
     });
 
     window.addEventListener('resize', () => {
-        editor.updateOptions({ minimap: { enabled: window.innerWidth > 768 } });
+        if (editor) {
+            editor.layout();
+            editor.updateOptions({ minimap: { enabled: window.innerWidth > 768 } });
+        }
     });
 }
 
