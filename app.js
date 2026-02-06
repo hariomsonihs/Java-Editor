@@ -64,6 +64,11 @@ function initializeUI() {
         overlay.classList.add('active');
     });
 
+    document.getElementById('menuBtnMobile').addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+    });
+
     closeSidebar.addEventListener('click', closeSidebarPanel);
     overlay.addEventListener('click', closeSidebarPanel);
 
@@ -110,8 +115,12 @@ function initializeUI() {
     });
 
     document.getElementById('runCode').addEventListener('click', runCode);
+    document.getElementById('runCodeMobile').addEventListener('click', runCode);
     document.getElementById('downloadCode').addEventListener('click', downloadCurrentFile);
     document.getElementById('settingsBtn').addEventListener('click', () => {
+        document.getElementById('settingsModal').classList.add('active');
+    });
+    document.getElementById('settingsBtnMobile').addEventListener('click', () => {
         document.getElementById('settingsModal').classList.add('active');
     });
 
@@ -356,6 +365,7 @@ function openFile(fileId) {
 
     editor.value = file.content;
     document.getElementById('currentFileName').textContent = file.name;
+    document.getElementById('currentFileNameMobile').textContent = file.name;
     isEditorDirty = false;
     updateSaveIndicator(true);
     localStorage.setItem('lastOpenedFileId', fileId);
@@ -457,6 +467,9 @@ function runCode() {
     const outputPanel = document.getElementById('outputPanel');
     const outputContent = document.getElementById('outputContent');
     const consoleInputArea = document.getElementById('consoleInputArea');
+    const theme = localStorage.getItem('editorTheme') || 'vs-dark';
+    const successColor = theme === 'vs-light' ? '#2e7d32' : '#4caf50';
+    const warningColor = theme === 'vs-light' ? '#f57c00' : '#ff9800';
     
     executionState = {
         inputs: [],
@@ -468,12 +481,12 @@ function runCode() {
     
     outputPanel.style.display = 'flex';
     outputPanel.classList.add('active');
-    outputContent.innerHTML = '<span style="color: #4caf50;">⏳ Starting execution...</span>\n\n';
+    outputContent.innerHTML = `<span style="color: ${successColor};">⏳ Starting execution...</span>\n\n`;
     consoleInputArea.style.display = 'none';
 
     setTimeout(() => {
         if (code.includes('Scanner') || code.includes('BufferedReader')) {
-            outputContent.innerHTML += '<span style="color: #ff9800;">📝 This program requires input.</span>\n\n';
+            outputContent.innerHTML += `<span style="color: ${warningColor};">📝 This program requires input.</span>\n\n`;
             handleInteractiveExecution(code);
         } else {
             executeWithAPI(code, []);
@@ -561,8 +574,14 @@ function submitConsoleInput() {
 function executeWithAPI(code, inputs) {
     const outputContent = document.getElementById('outputContent');
     const runBtn = document.getElementById('runCode');
+    const theme = localStorage.getItem('editorTheme') || 'vs-dark';
+    const textColor = theme === 'vs-light' ? '#000000' : '#e0e0e0';
+    const successColor = theme === 'vs-light' ? '#2e7d32' : '#4caf50';
+    const errorColor = theme === 'vs-light' ? '#c62828' : '#f44336';
+    const warningColor = theme === 'vs-light' ? '#f57c00' : '#ff9800';
+    const infoColor = theme === 'vs-light' ? '#0277bd' : '#2196f3';
     
-    outputContent.innerHTML += '<span style="color: #ff9800;">⚙️ Compiling and executing...</span>\n\n';
+    outputContent.innerHTML += `<span style="color: ${warningColor};">⚙️ Compiling and executing...</span>\n\n`;
     
     if (runBtn) runBtn.disabled = true;
     
@@ -588,10 +607,10 @@ function executeWithAPI(code, inputs) {
                 result = result.replace(prompt, '');
             });
             
-            outputContent.innerHTML += `<span style="color: #e0e0e0;">${escapeHtml(result)}</span>`;
-            outputContent.innerHTML += '\n<span style="color: #4caf50;">✓ Execution completed</span>';
+            outputContent.innerHTML += `<span style="color: ${textColor};">${escapeHtml(result)}</span>`;
+            outputContent.innerHTML += `\n<span style="color: ${successColor};">✓ Execution completed</span>`;
         } else if (data.error) {
-            outputContent.innerHTML += `<span style="color: #f44336;">❌ Error:\n${escapeHtml(data.error)}</span>`;
+            outputContent.innerHTML += `<span style="color: ${errorColor};">❌ Error:\n${escapeHtml(data.error)}</span>`;
         } else {
             outputContent.innerHTML += '<span style="color: #888;">(No output)</span>';
         }
@@ -599,8 +618,8 @@ function executeWithAPI(code, inputs) {
     .catch(error => {
         if (runBtn) runBtn.disabled = false;
         executionState.isExecuting = false;
-        outputContent.innerHTML += `<span style="color: #f44336;">❌ Server not running!</span>\n`;
-        outputContent.innerHTML += '<span style="color: #ff9800;">Start server: python server_python.py</span>';
+        outputContent.innerHTML += `<span style="color: ${errorColor};">❌ Server not running!</span>\n`;
+        outputContent.innerHTML += `<span style="color: ${warningColor};">Start server: python server_python.py</span>`;
     });
 }
 
@@ -655,6 +674,7 @@ function applyTheme(theme) {
     const body = document.body;
     const editorEl = document.getElementById('editor');
     const editorContainer = document.querySelector('.editor-container');
+    const outputContent = document.getElementById('outputContent');
     
     if (theme === 'vs-light') {
         body.style.setProperty('--bg-dark', '#f3f3f3');
@@ -665,7 +685,7 @@ function applyTheme(theme) {
         editorEl.style.background = '#ffffff';
         editorEl.style.color = '#000000';
         editorContainer.style.background = '#ffffff';
-        editorContainer.querySelector('::before')?.style?.setProperty('background', '#f3f3f3');
+        outputContent.style.color = '#000000';
     } else if (theme === 'hc-black') {
         body.style.setProperty('--bg-dark', '#000000');
         body.style.setProperty('--bg-darker', '#000000');
@@ -675,6 +695,7 @@ function applyTheme(theme) {
         editorEl.style.background = '#000000';
         editorEl.style.color = '#ffffff';
         editorContainer.style.background = '#000000';
+        outputContent.style.color = '#ffffff';
     } else {
         body.style.setProperty('--bg-dark', '#252526');
         body.style.setProperty('--bg-darker', '#1e1e1e');
@@ -684,6 +705,7 @@ function applyTheme(theme) {
         editorEl.style.background = '#1e1e1e';
         editorEl.style.color = '#d4d4d4';
         editorContainer.style.background = '#1e1e1e';
+        outputContent.style.color = '#e0e0e0';
     }
 }
 
