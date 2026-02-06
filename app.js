@@ -144,6 +144,12 @@ function initializeUI() {
         localStorage.setItem('editorFontSize', size);
     });
 
+    document.getElementById('themeSelect').addEventListener('change', (e) => {
+        const theme = e.target.value;
+        applyTheme(theme);
+        localStorage.setItem('editorTheme', theme);
+    });
+
     document.getElementById('autoSave').addEventListener('change', (e) => {
         const enabled = e.target.checked;
         localStorage.setItem('autoSaveEnabled', enabled);
@@ -570,14 +576,53 @@ function escapeHtml(text) {
 function loadSettings() {
     const fontSize = localStorage.getItem('editorFontSize') || 14;
     const autoSave = localStorage.getItem('autoSaveEnabled') !== 'false';
+    const theme = localStorage.getItem('editorTheme') || 'vs-dark';
 
     document.getElementById('fontSize').value = fontSize;
     document.getElementById('autoSave').checked = autoSave;
+    document.getElementById('themeSelect').value = theme;
 
     editor.style.fontSize = fontSize + 'px';
+    applyTheme(theme);
 
     if (autoSave) {
         startAutoSave();
+    }
+}
+
+function applyTheme(theme) {
+    const body = document.body;
+    const editorEl = document.getElementById('editor');
+    const editorContainer = document.querySelector('.editor-container');
+    
+    if (theme === 'vs-light') {
+        body.style.setProperty('--bg-dark', '#f3f3f3');
+        body.style.setProperty('--bg-darker', '#ffffff');
+        body.style.setProperty('--text-light', '#333333');
+        body.style.setProperty('--text-white', '#000000');
+        body.style.setProperty('--border-color', '#e0e0e0');
+        editorEl.style.background = '#ffffff';
+        editorEl.style.color = '#000000';
+        editorContainer.style.background = '#ffffff';
+        editorContainer.querySelector('::before')?.style?.setProperty('background', '#f3f3f3');
+    } else if (theme === 'hc-black') {
+        body.style.setProperty('--bg-dark', '#000000');
+        body.style.setProperty('--bg-darker', '#000000');
+        body.style.setProperty('--text-light', '#ffffff');
+        body.style.setProperty('--text-white', '#ffffff');
+        body.style.setProperty('--border-color', '#6fc3df');
+        editorEl.style.background = '#000000';
+        editorEl.style.color = '#ffffff';
+        editorContainer.style.background = '#000000';
+    } else {
+        body.style.setProperty('--bg-dark', '#252526');
+        body.style.setProperty('--bg-darker', '#1e1e1e');
+        body.style.setProperty('--text-light', '#cccccc');
+        body.style.setProperty('--text-white', '#ffffff');
+        body.style.setProperty('--border-color', '#3e3e42');
+        editorEl.style.background = '#1e1e1e';
+        editorEl.style.color = '#d4d4d4';
+        editorContainer.style.background = '#1e1e1e';
     }
 }
 
