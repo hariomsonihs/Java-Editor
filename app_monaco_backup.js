@@ -1,40 +1,109 @@
 let editor;
 let isEditorDirty = false;
+let monacoLoaded = false;
 
-// Initialize Ace Editor
-function initializeEditor() {
-    console.log('Initializing Ace Editor...');
-    
-    editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/java");
-    editor.setValue('public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}', -1);
-    
-    editor.setOptions({
-        fontSize: "14px",
-        showPrintMargin: false,
-        enableBasicAutocompletion: true,
-        enableLiveAutocompletion: true,
-        enableSnippets: true,
-        tabSize: 4,
-        useSoftTabs: true
-    });
+require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
 
-    editor.session.on('change', function() {
-        isEditorDirty = true;
-        updateSaveIndicator(false);
-    });
-
-    console.log('Ace Editor initialized successfully');
-}
-
-// Initialize after DOM loads
-document.addEventListener('DOMContentLoaded', function() {
-    initializeEditor();
-    initializeUI();
-    loadSettings();
-    renderProjects();
+require(['vs/editor/editor.main'], function () {
+    monacoLoaded = true;
+    console.log('Monaco loaded successfully');
+    setTimeout(() => {
+        initializeEditor();
+        initializeUI();
+        loadSettings();
+        renderProjects();
+    }, 200);
 });
+
+function initializeEditor() {
+    const editorContainer = document.getElementById('editor');
+    if (!editorContainer) {
+        console.error('Editor container not found!');
+        return;
+    }
+
+    console.log('Creating Monaco editor...');
+    
+    try {
+        editor = monaco.editor.create(editorContainer, {
+            value: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+            language: 'java',
+            theme: 'vs-dark',
+            automaticLayout: false,
+            fontSize: 14,
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            wordWrap: 'off',
+            lineNumbers: 'on',
+            renderWhitespace: 'none',
+            tabSize: 4,
+            insertSpaces: true,
+            formatOnPaste: true,
+            formatOnType: false,
+            autoIndent: 'full',
+            suggestOnTriggerCharacters: true,
+            quickSuggestions: true,
+            parameterHints: { enabled: true },
+            folding: true,
+            foldingStrategy: 'indentation',
+            showFoldingControls: 'mouseover',
+            matchBrackets: 'always',
+            autoClosingBrackets: 'always',
+            autoClosingQuotes: 'always',
+            snippetSuggestions: 'top',
+            glyphMargin: false,
+            fixedOverflowWidgets: true,
+            readOnly: false,
+            domReadOnly: false,
+            scrollbar: {
+                vertical: 'visible',
+                horizontal: 'visible',
+                useShadows: false,
+                verticalScrollbarSize: 10,
+                horizontalScrollbarSize: 10
+            }
+        });
+
+        console.log('Editor created successfully');
+
+        // Manual layout management
+        const layoutEditor = () => {
+            if (editor && editorContainer) {
+                const width = editorContainer.offsetWidth;
+                const height = editorContainer.offsetHeight;
+                if (width > 0 && height > 0) {
+                    editor.layout({ width, height });
+                }
+            }
+        };
+
+        // Force layout multiple times
+        setTimeout(layoutEditor, 50);
+        setTimeout(layoutEditor, 200);
+        setTimeout(layoutEditor, 500);
+        setTimeout(layoutEditor, 1000);
+
+        editor.onDidChangeModelContent(() => {
+            isEditorDirty = true;
+            updateSaveIndicator(false);
+        });
+
+        window.addEventListener('resize', () => {
+            if (editor) {
+                layoutEditor();
+            }
+        });
+
+        // Layout on visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && editor) {
+                setTimeout(layoutEditor, 100);
+            }
+        });
+    } catch (error) {
+        console.error('Error creating editor:', error);
+    }
+}
 
 function initializeUI() {
     const menuBtn = document.getElementById('menuBtn');
@@ -102,10 +171,12 @@ function initializeUI() {
     });
 
     document.getElementById('closeOutput').addEventListener('click', () => {
+        console.log('Close output clicked');
         document.getElementById('outputPanel').classList.remove('active');
     });
 
     document.getElementById('clearConsole').addEventListener('click', () => {
+        console.log('Clear console clicked');
         document.getElementById('outputContent').innerHTML = '';
         document.getElementById('consoleInputArea').style.display = 'none';
     });
@@ -125,18 +196,13 @@ function initializeUI() {
     });
 
     document.getElementById('themeSelect').addEventListener('change', (e) => {
-        const themes = {
-            'vs-dark': 'ace/theme/monokai',
-            'vs-light': 'ace/theme/chrome',
-            'hc-black': 'ace/theme/terminal'
-        };
-        editor.setTheme(themes[e.target.value] || 'ace/theme/monokai');
+        monaco.editor.setTheme(e.target.value);
         localStorage.setItem('editorTheme', e.target.value);
     });
 
     document.getElementById('fontSize').addEventListener('change', (e) => {
         const size = parseInt(e.target.value);
-        editor.setFontSize(size + 'px');
+        editor.updateOptions({ fontSize: size });
         localStorage.setItem('editorFontSize', size);
     });
 
@@ -169,6 +235,7 @@ function initializeUI() {
 }
 
 function handleBottomNavAction(action) {
+    console.log('Bottom nav action:', action);
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
 
@@ -182,6 +249,7 @@ function handleBottomNavAction(action) {
             overlay.classList.add('active');
             break;
         case 'run':
+            console.log('Run from bottom nav');
             runCode();
             break;
         case 'settings':
@@ -262,7 +330,13 @@ function renderFiles() {
 }
 
 function openFile(fileId) {
-    if (executionState.waitingForInput) return;
+    console.log('Opening file:', fileId);
+    
+    // Don't open file if execution is in progress
+    if (executionState.waitingForInput) {
+        console.log('Execution in progress, ignoring file open');
+        return;
+    }
     
     if (isEditorDirty) {
         saveCurrentFile();
@@ -271,7 +345,7 @@ function openFile(fileId) {
     const file = fileManager.setCurrentFile(fileId);
     if (!file) return;
 
-    editor.setValue(file.content, -1);
+    editor.setValue(file.content);
     document.getElementById('currentFileName').textContent = file.name;
     isEditorDirty = false;
     updateSaveIndicator(true);
@@ -313,7 +387,7 @@ function deleteProject(projectId) {
         renderProjects();
         renderFiles();
         if (!fileManager.currentProject) {
-            editor.setValue('public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}', -1);
+            editor.setValue('public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}');
             document.getElementById('currentFileName').textContent = 'Untitled.java';
         }
     }
@@ -324,7 +398,7 @@ function deleteFile(fileId) {
         fileManager.deleteFile(fileManager.currentProject.id, fileId);
         renderFiles();
         if (fileManager.currentFile?.id === fileId) {
-            editor.setValue('', -1);
+            editor.setValue('');
             document.getElementById('currentFileName').textContent = 'Untitled.java';
         }
     }
@@ -359,10 +433,21 @@ let executionState = {
 };
 
 function runCode() {
+    console.log('=== RUN CODE CALLED ===');
+    
     const code = editor.getValue();
     const outputPanel = document.getElementById('outputPanel');
     const outputContent = document.getElementById('outputContent');
     const consoleInputArea = document.getElementById('consoleInputArea');
+    
+    console.log('Output panel element:', outputPanel);
+    console.log('Code length:', code.length);
+    
+    if (!outputPanel || !outputContent) {
+        console.error('Output elements not found!');
+        alert('Error: Output panel not found!');
+        return;
+    }
     
     executionState = {
         inputs: [],
@@ -372,10 +457,14 @@ function runCode() {
         prompts: []
     };
     
+    // Force show output panel
     outputPanel.style.display = 'flex';
     outputPanel.classList.add('active');
     outputContent.innerHTML = '<span style="color: #4caf50;">⏳ Starting execution...</span>\n\n';
     consoleInputArea.style.display = 'none';
+    
+    console.log('Output panel classes:', outputPanel.className);
+    console.log('Output panel height:', outputPanel.offsetHeight);
 
     setTimeout(() => {
         if (code.includes('Scanner') || code.includes('BufferedReader')) {
@@ -389,9 +478,11 @@ function runCode() {
 
 function handleInteractiveExecution(code) {
     const outputContent = document.getElementById('outputContent');
+    const consoleInputArea = document.getElementById('consoleInputArea');
     
     const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean)\s*\(/g) || []).length;
     
+    // Extract prompts from code
     executionState.prompts = [];
     const printMatches = code.match(/System\.out\.print(?:ln)?\s*\([^)]+\)/g) || [];
     printMatches.forEach(match => {
@@ -431,13 +522,21 @@ function promptForInput() {
 }
 
 function submitConsoleInput() {
+    console.log('=== SUBMIT INPUT CALLED ===');
+    
     const inputField = document.getElementById('consoleInput');
     const value = inputField.value;
     const outputContent = document.getElementById('outputContent');
     const outputPanel = document.getElementById('outputPanel');
     
-    if (value.trim() === '') return false;
+    console.log('Input value:', value);
     
+    if (value.trim() === '') {
+        console.log('Empty input, returning');
+        return false;
+    }
+    
+    // Show confirmation with prompt and input
     const currentPrompt = executionState.prompts[executionState.inputIndex] || `Input ${executionState.inputIndex + 1}`;
     outputContent.innerHTML += `<span style="color: #00bcd4;">${currentPrompt}</span> <span style="color: #4caf50;">${value}</span>\n`;
     
@@ -447,6 +546,8 @@ function submitConsoleInput() {
     
     const code = editor.getValue();
     const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean)\s*\(/g) || []).length;
+    
+    console.log('Input index:', executionState.inputIndex, 'Total inputs needed:', inputCount);
     
     if (executionState.inputIndex < inputCount) {
         promptForInput();
@@ -485,6 +586,7 @@ function executeWithAPI(code, inputs) {
         if (data.success && data.output) {
             let result = data.output;
             
+            // Remove input prompts from output
             const prompts = result.match(/Enter [^:]+:\s*/g) || [];
             prompts.forEach(prompt => {
                 result = result.replace(prompt, '');
@@ -506,11 +608,49 @@ function executeWithAPI(code, inputs) {
     });
 }
 
+function simulateExecution(code, inputs) {
+    const outputContent = document.getElementById('outputContent');
+    
+    try {
+        let output = '';
+        let inputIndex = 0;
+        
+        const printMatches = [...code.matchAll(/System\.out\.print(?:ln)?\s*\([^)]+\)/g)];
+        
+        for (const match of printMatches) {
+            const statement = match[0];
+            const textMatch = statement.match(/"([^"]*)"/g);
+            
+            if (textMatch) {
+                textMatch.forEach(text => {
+                    output += text.replace(/"/g, '').replace(/\\n/g, '\n');
+                });
+                
+                if (statement.includes('println')) {
+                    output += '\n';
+                }
+            }
+        }
+        
+        if (output) {
+            outputContent.innerHTML += escapeHtml(output);
+        } else {
+            outputContent.innerHTML += '<span style="color: #888;">(No output)</span>';
+        }
+        
+        outputContent.innerHTML += '\n\n<span style="color: #4caf50;">✓ Simulation completed</span>';
+    } catch (error) {
+        outputContent.innerHTML += `<span style="color: #f44336;">❌ Simulation Error: ${error.message}</span>`;
+    }
+}
+
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
+
+
 
 function loadSettings() {
     const theme = localStorage.getItem('editorTheme') || 'vs-dark';
@@ -521,13 +661,8 @@ function loadSettings() {
     document.getElementById('fontSize').value = fontSize;
     document.getElementById('autoSave').checked = autoSave;
 
-    const themes = {
-        'vs-dark': 'ace/theme/monokai',
-        'vs-light': 'ace/theme/chrome',
-        'hc-black': 'ace/theme/terminal'
-    };
-    editor.setTheme(themes[theme] || 'ace/theme/monokai');
-    editor.setFontSize(fontSize + 'px');
+    monaco.editor.setTheme(theme);
+    editor.updateOptions({ fontSize: parseInt(fontSize) });
 
     if (autoSave) {
         startAutoSave();
