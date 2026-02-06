@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Java Code Editor</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007acc">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="overlay" id="overlay"></div>
+        
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-code"></i> Java Editor</h2>
+                <button class="close-sidebar" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-actions">
+                <button class="btn-primary" id="newProject">
+                    <i class="fas fa-folder-plus"></i> New Project
+                </button>
+                <button class="btn-primary" id="newFile">
+                    <i class="fas fa-file-plus"></i> New File
+                </button>
+            </div>
+
+            <div class="projects-section">
+                <h3>Projects</h3>
+                <div id="projectsList" class="projects-list"></div>
+            </div>
+
+            <div class="files-section">
+                <h3>Files</h3>
+                <div id="filesList" class="files-list"></div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <button class="menu-btn" id="menuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="file-info">
+                    <span id="currentFileName">Untitled.java</span>
+                    <span class="save-indicator" id="saveIndicator">
+                        <i class="fas fa-check-circle"></i> Saved
+                    </span>
+                </div>
+                <div class="top-actions">
+                    <button class="icon-btn" id="runCode" title="Run Code">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="icon-btn" id="downloadCode" title="Download">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="icon-btn" id="settingsBtn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="editor-container">
+                <div id="editor"></div>
+            </div>
+
+            <div class="output-panel" id="outputPanel">
+                <div class="output-header">
+                    <h4><i class="fas fa-terminal"></i> Console</h4>
+                    <button class="icon-btn" id="clearConsole" title="Clear">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                    <button class="icon-btn" id="closeOutput">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="output-content" id="outputContent"></div>
+                <div class="console-input-area" id="consoleInputArea" style="display: none;">
+                    <input type="text" id="consoleInput" class="console-input" placeholder="Enter input..." autocomplete="off">
+                    <button type="button" class="btn-primary" id="submitInput">Submit</button>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-action="editor">
+                <i class="fas fa-code"></i>
+                <span>Editor</span>
+            </button>
+            <button class="nav-item" data-action="files">
+                <i class="fas fa-folder"></i>
+                <span>Files</span>
+            </button>
+            <button class="nav-item" data-action="run">
+                <i class="fas fa-play"></i>
+                <span>Run</span>
+            </button>
+            <button class="nav-item" data-action="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </button>
+        </nav>
+    </div>
+
+    <div class="modal" id="projectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Project</h3>
+                <button class="close-modal" data-modal="projectModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="projectName" placeholder="Project Name" class="input-field">
+                <button class="btn-primary" id="createProject">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="fileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New File</h3>
+                <button class="close-modal" data-modal="fileModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="fileName" placeholder="FileName.java" class="input-field">
+                <button class="btn-primary" id="createFile">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-modal" data-modal="settingsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <label>Theme</label>
+                    <select id="themeSelect" class="input-field">
+                        <option value="vs-dark">Dark</option>
+                        <option value="vs-light">Light</option>
+                        <option value="hc-black">High Contrast</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Font Size</label>
+                    <input type="number" id="fontSize" value="14" min="10" max="30" class="input-field">
+                </div>
+                <div class="setting-item">
+                    <label>Auto Save</label>
+                    <input type="checkbox" id="autoSave" checked>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(() => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker registration failed:', err));
+        }
+
+        // Wait for Monaco to load before loading other scripts
+        window.addEventListener('load', function() {
+            console.log('Page loaded, initializing...');
+            
+            // Load file manager first
+            const fileManagerScript = document.createElement('script');
+            fileManagerScript.src = 'file-manager.js';
+            fileManagerScript.onload = function() {
+                console.log('File manager loaded');
+                
+                // Then load app.js
+                const appScript = document.createElement('script');
+                appScript.src = 'app.js';
+                appScript.onload = function() {
+                    console.log('App.js loaded - Editor ready!');
+                };
+                document.body.appendChild(appScript);
+            };
+            document.body.appendChild(fileManagerScript);
+        });
+    </script>
+</body>
+</html>
