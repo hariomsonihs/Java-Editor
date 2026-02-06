@@ -9,6 +9,7 @@ window.addEventListener('load', function() {
         initializeUI();
         loadSettings();
         renderProjects();
+        restoreLastSession();
     }, 100);
 });
 
@@ -76,13 +77,6 @@ function initializeUI() {
     });
 
     document.getElementById('newFile').addEventListener('click', () => {
-        if (!fileManager.currentProject) {
-            const defaultProject = fileManager.createProject('My Project');
-            if (defaultProject) {
-                renderProjects();
-                renderFiles();
-            }
-        }
         document.getElementById('fileModal').classList.add('active');
     });
 
@@ -98,9 +92,10 @@ function initializeUI() {
 
     document.getElementById('createFile').addEventListener('click', () => {
         const name = document.getElementById('fileName').value;
-        const file = fileManager.createFile(fileManager.currentProject.id, name);
+        const projectId = fileManager.currentProject ? fileManager.currentProject.id : null;
+        const file = fileManager.createFile(projectId, name);
         if (file) {
-            renderFiles();
+            renderProjects();
             openFile(file.id);
             document.getElementById('fileModal').classList.remove('active');
             document.getElementById('fileName').value = '';
@@ -201,12 +196,56 @@ function handleBottomNavAction(action) {
 
 function renderProjects() {
     const projectsList = document.getElementById('projectsList');
+    const standaloneFilesList = document.getElementById('standaloneFilesList');
     projectsList.innerHTML = '';
+    standaloneFilesList.innerHTML = '';
 
-    fileManager.projects.forEach(project => {
-        const div = document.createElement('div');
-        div.className = 'project-item' + (fileManager.currentProject?.id === project.id ? ' active' : '');
-        div.innerHTML = `
+    // Render standalone files (files without project)
+    const standaloneFiles = fileManager.projects
+        .filter(p => p.id === null)
+        .flatMap(p => fileManager.getAllFiles(p.id));
+    
+    const allStandaloneFiles = fileManager.getAllFiles(null);
+    
+    if (allStandaloneFiles.length === 0) {
+        standaloneFilesList.innerHTML = '<p style="padding: 8px; font-size: 12px; color: #888;">No standalone files</p>';
+    } else {
+        allStandaloneFiles.forEach(file => {
+            const div = document.createElement('div');
+            div.className = 'file-item' + (fileManager.currentFile?.id === file.id ? ' active' : '');
+            div.innerHTML = `
+                <i class="fas fa-file-code"></i>
+                <span>${file.name}</span>
+                <div class="file-actions">
+                    <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('${file.id}')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="file-action-btn" onclick="event.stopPropagation(); deleteFile(null, '${file.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            div.addEventListener('click', (e) => {
+                if (!e.target.closest('.file-actions') && !executionState.waitingForInput) {
+                    openFile(file.id);
+                }
+            });
+            standaloneFilesList.appendChild(div);
+        });
+    }
+
+    // Render projects with their files
+    const realProjects = fileManager.projects.filter(p => p.id !== null);
+    
+    if (realProjects.length === 0) {
+        projectsList.innerHTML = '<p style="padding: 8px; font-size: 12px; color: #888;">No projects</p>';
+        return;
+    }
+
+    realProjects.forEach(project => {
+        const projectDiv = document.createElement('div');
+        projectDiv.className = 'project-item' + (fileManager.currentProject?.id === project.id ? ' active' : '');
+        projectDiv.innerHTML = `
             <i class="fas fa-folder"></i>
             <span>${project.name}</span>
             <div class="file-actions">
@@ -215,59 +254,51 @@ function renderProjects() {
                 </button>
             </div>
         `;
-        div.addEventListener('click', (e) => {
+        projectDiv.addEventListener('click', (e) => {
             if (!e.target.closest('.file-actions')) {
                 selectProject(project.id);
             }
         });
-        projectsList.appendChild(div);
+        projectsList.appendChild(projectDiv);
+        
+        // Render files inside project
+        const files = fileManager.getAllFiles(project.id);
+        if (files.length > 0) {
+            files.forEach(file => {
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'file-item' + (fileManager.currentFile?.id === file.id ? ' active' : '');
+                fileDiv.style.paddingLeft = '30px';
+                fileDiv.innerHTML = `
+                    <i class="fas fa-file-code"></i>
+                    <span>${file.name}</span>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('${file.id}')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); deleteFile('${project.id}', '${file.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                fileDiv.addEventListener('click', (e) => {
+                    if (!e.target.closest('.file-actions') && !executionState.waitingForInput) {
+                        openFile(file.id);
+                    }
+                });
+                projectsList.appendChild(fileDiv);
+            });
+        }
     });
 }
 
 function selectProject(projectId) {
     fileManager.setCurrentProject(projectId);
+    localStorage.setItem('lastOpenedProjectId', projectId);
     renderProjects();
-    renderFiles();
 }
 
 function renderFiles() {
-    const filesList = document.getElementById('filesList');
-    filesList.innerHTML = '';
-
-    if (!fileManager.currentProject) {
-        filesList.innerHTML = '<p style="padding: 8px; font-size: 12px; color: #888;">No project selected</p>';
-        return;
-    }
-
-    const files = fileManager.getAllFiles(fileManager.currentProject.id);
-    
-    if (files.length === 0) {
-        filesList.innerHTML = '<p style="padding: 8px; font-size: 12px; color: #888;">No files yet</p>';
-        return;
-    }
-
-    files.forEach(file => {
-        const div = document.createElement('div');
-        div.className = 'file-item' + (fileManager.currentFile?.id === file.id ? ' active' : '');
-        div.innerHTML = `
-            <i class="fas fa-file-code"></i>
-            <span>${file.name}</span>
-            <div class="file-actions">
-                <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('${file.id}')">
-                    <i class="fas fa-download"></i>
-                </button>
-                <button class="file-action-btn" onclick="event.stopPropagation(); deleteFile('${file.id}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-        div.addEventListener('click', (e) => {
-            if (!e.target.closest('.file-actions') && !executionState.waitingForInput) {
-                openFile(file.id);
-            }
-        });
-        filesList.appendChild(div);
-    });
+    // This function is no longer needed as files are rendered in renderProjects
 }
 
 function openFile(fileId) {
@@ -284,7 +315,8 @@ function openFile(fileId) {
     document.getElementById('currentFileName').textContent = file.name;
     isEditorDirty = false;
     updateSaveIndicator(true);
-    renderFiles();
+    localStorage.setItem('lastOpenedFileId', fileId);
+    renderProjects();
 
     if (window.innerWidth <= 768) {
         document.getElementById('sidebar').classList.remove('active');
@@ -293,36 +325,27 @@ function openFile(fileId) {
 }
 
 function saveCurrentFile() {
-    if (!fileManager.currentProject || !fileManager.currentFile) {
-        if (fileManager.projects.length === 0) {
-            const code = editor.value;
-            const classMatch = code.match(/public\s+class\s+(\w+)/);
-            const className = classMatch ? classMatch[1] : 'Main';
-            
-            fileManager.createProject('My Project');
-            renderProjects();
-            
-            const file = fileManager.createFile(fileManager.currentProject.id, className + '.java');
-            if (file) {
-                fileManager.setCurrentFile(file.id);
-                document.getElementById('currentFileName').textContent = file.name;
-                renderFiles();
-            }
-        } else {
-            return;
+    if (!fileManager.currentFile) {
+        return;
+    }
+
+    // Find which project contains this file
+    let projectId = null;
+    for (const project of fileManager.projects) {
+        if (project.files.find(f => f.id === fileManager.currentFile.id)) {
+            projectId = project.id;
+            break;
         }
     }
 
-    if (fileManager.currentProject && fileManager.currentFile) {
-        const content = editor.value;
-        fileManager.updateFileContent(
-            fileManager.currentProject.id,
-            fileManager.currentFile.id,
-            content
-        );
-        isEditorDirty = false;
-        updateSaveIndicator(true);
-    }
+    const content = editor.value;
+    fileManager.updateFileContent(
+        projectId,
+        fileManager.currentFile.id,
+        content
+    );
+    isEditorDirty = false;
+    updateSaveIndicator(true);
 }
 
 function updateSaveIndicator(saved) {
@@ -340,7 +363,6 @@ function deleteProject(projectId) {
     if (confirm('Are you sure you want to delete this project?')) {
         fileManager.deleteProject(projectId);
         renderProjects();
-        renderFiles();
         if (!fileManager.currentProject) {
             editor.value = 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}';
             document.getElementById('currentFileName').textContent = 'Untitled.java';
@@ -348,10 +370,10 @@ function deleteProject(projectId) {
     }
 }
 
-function deleteFile(fileId) {
+function deleteFile(projectId, fileId) {
     if (confirm('Are you sure you want to delete this file?')) {
-        fileManager.deleteFile(fileManager.currentProject.id, fileId);
-        renderFiles();
+        fileManager.deleteFile(projectId, fileId);
+        renderProjects();
         if (fileManager.currentFile?.id === fileId) {
             editor.value = '';
             document.getElementById('currentFileName').textContent = 'Untitled.java';
@@ -565,6 +587,26 @@ function startAutoSave() {
             saveCurrentFile();
         }
     }, 3000);
+}
+
+function restoreLastSession() {
+    const lastFileId = localStorage.getItem('lastOpenedFileId');
+    const lastProjectId = localStorage.getItem('lastOpenedProjectId');
+    
+    if (lastProjectId) {
+        fileManager.setCurrentProject(lastProjectId);
+    }
+    
+    if (lastFileId) {
+        const file = fileManager.setCurrentFile(lastFileId);
+        if (file) {
+            editor.value = file.content;
+            document.getElementById('currentFileName').textContent = file.name;
+            isEditorDirty = false;
+            updateSaveIndicator(true);
+            renderProjects();
+        }
+    }
 }
 
 window.addEventListener('beforeunload', (e) => {

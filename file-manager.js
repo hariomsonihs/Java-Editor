@@ -8,7 +8,19 @@ class FileManager {
 
     loadProjects() {
         const stored = localStorage.getItem('javaEditorProjects');
-        return stored ? JSON.parse(stored) : [];
+        const projects = stored ? JSON.parse(stored) : [];
+        
+        // Add standalone files container if not exists
+        if (!projects.find(p => p.id === null)) {
+            projects.unshift({
+                id: null,
+                name: 'Standalone Files',
+                files: [],
+                createdAt: new Date().toISOString()
+            });
+        }
+        
+        return projects;
     }
 
     saveProjects() {
@@ -52,6 +64,7 @@ class FileManager {
             fileName += '.java';
         }
 
+        // If no projectId, use standalone files (null project)
         const project = this.projects.find(p => p.id === projectId);
         if (!project) return null;
 
@@ -113,23 +126,33 @@ class FileManager {
     }
 
     setCurrentFile(fileId) {
-        if (!this.currentProject) return null;
-        this.currentFile = this.currentProject.files.find(f => f.id === fileId);
-        return this.currentFile;
+        // Search in all projects including standalone files
+        for (const project of this.projects) {
+            const file = project.files.find(f => f.id === fileId);
+            if (file) {
+                this.currentProject = project.id !== null ? project : null;
+                this.currentFile = file;
+                return file;
+            }
+        }
+        return null;
     }
 
     exportFile(fileId) {
-        if (!this.currentProject) return;
-        const file = this.getFile(this.currentProject.id, fileId);
-        if (!file) return;
-
-        const blob = new Blob([file.content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = file.name;
-        a.click();
-        URL.revokeObjectURL(url);
+        // Find file in any project
+        for (const project of this.projects) {
+            const file = project.files.find(f => f.id === fileId);
+            if (file) {
+                const blob = new Blob([file.content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file.name;
+                a.click();
+                URL.revokeObjectURL(url);
+                return;
+            }
+        }
     }
 
     startAutoSave(callback, interval = 3000) {
