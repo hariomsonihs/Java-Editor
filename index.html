@@ -204,8 +204,37 @@
                     <input type="number" id="fontSize" value="14" min="10" max="30" class="input-field">
                 </div>
                 <div class="setting-item">
+                    <label>Font Family</label>
+                    <select id="fontFamily" class="input-field">
+                        <option value="Consolas">Consolas</option>
+                        <option value="Monaco">Monaco</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="monospace">Monospace</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Tab Size</label>
+                    <select id="tabSize" class="input-field">
+                        <option value="2">2 Spaces</option>
+                        <option value="4" selected>4 Spaces</option>
+                        <option value="8">8 Spaces</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Line Height</label>
+                    <input type="number" id="lineHeight" value="1.6" min="1" max="3" step="0.1" class="input-field">
+                </div>
+                <div class="setting-item">
                     <label>Auto Save</label>
                     <input type="checkbox" id="autoSave" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Word Wrap</label>
+                    <input type="checkbox" id="wordWrap">
+                </div>
+                <div class="setting-item">
+                    <label>Show Line Numbers</label>
+                    <input type="checkbox" id="showLineNumbers" checked>
                 </div>
             </div>
         </div>

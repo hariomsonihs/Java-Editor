@@ -150,6 +150,43 @@ function initializeUI() {
         localStorage.setItem('editorTheme', theme);
     });
 
+    document.getElementById('fontFamily').addEventListener('change', (e) => {
+        const font = e.target.value;
+        editor.style.fontFamily = font;
+        localStorage.setItem('editorFontFamily', font);
+    });
+
+    document.getElementById('tabSize').addEventListener('change', (e) => {
+        const size = e.target.value;
+        editor.style.tabSize = size;
+        localStorage.setItem('editorTabSize', size);
+    });
+
+    document.getElementById('lineHeight').addEventListener('change', (e) => {
+        const height = e.target.value;
+        editor.style.lineHeight = height;
+        localStorage.setItem('editorLineHeight', height);
+    });
+
+    document.getElementById('wordWrap').addEventListener('change', (e) => {
+        const wrap = e.target.checked;
+        editor.style.whiteSpace = wrap ? 'pre-wrap' : 'pre';
+        localStorage.setItem('editorWordWrap', wrap);
+    });
+
+    document.getElementById('showLineNumbers').addEventListener('change', (e) => {
+        const show = e.target.checked;
+        const container = document.querySelector('.editor-container');
+        if (show) {
+            container.classList.add('show-line-numbers');
+            editor.style.paddingLeft = '50px';
+        } else {
+            container.classList.remove('show-line-numbers');
+            editor.style.paddingLeft = '10px';
+        }
+        localStorage.setItem('editorShowLineNumbers', show);
+    });
+
     document.getElementById('autoSave').addEventListener('change', (e) => {
         const enabled = e.target.checked;
         localStorage.setItem('autoSaveEnabled', enabled);
@@ -575,14 +612,38 @@ function escapeHtml(text) {
 
 function loadSettings() {
     const fontSize = localStorage.getItem('editorFontSize') || 14;
+    const fontFamily = localStorage.getItem('editorFontFamily') || 'Consolas';
+    const tabSize = localStorage.getItem('editorTabSize') || 4;
+    const lineHeight = localStorage.getItem('editorLineHeight') || 1.6;
+    const wordWrap = localStorage.getItem('editorWordWrap') === 'true';
+    const showLineNumbers = localStorage.getItem('editorShowLineNumbers') !== 'false';
     const autoSave = localStorage.getItem('autoSaveEnabled') !== 'false';
     const theme = localStorage.getItem('editorTheme') || 'vs-dark';
 
     document.getElementById('fontSize').value = fontSize;
+    document.getElementById('fontFamily').value = fontFamily;
+    document.getElementById('tabSize').value = tabSize;
+    document.getElementById('lineHeight').value = lineHeight;
+    document.getElementById('wordWrap').checked = wordWrap;
+    document.getElementById('showLineNumbers').checked = showLineNumbers;
     document.getElementById('autoSave').checked = autoSave;
     document.getElementById('themeSelect').value = theme;
 
     editor.style.fontSize = fontSize + 'px';
+    editor.style.fontFamily = fontFamily;
+    editor.style.tabSize = tabSize;
+    editor.style.lineHeight = lineHeight;
+    editor.style.whiteSpace = wordWrap ? 'pre-wrap' : 'pre';
+    
+    const container = document.querySelector('.editor-container');
+    if (showLineNumbers) {
+        container.classList.add('show-line-numbers');
+        editor.style.paddingLeft = '50px';
+    } else {
+        container.classList.remove('show-line-numbers');
+        editor.style.paddingLeft = '10px';
+    }
+    
     applyTheme(theme);
 
     if (autoSave) {
