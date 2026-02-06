@@ -78,14 +78,5 @@ def compile_java():
             pass
 
 if __name__ == '__main__':
-    print('\n' + '='*50)
-    print('  Java Editor Server Started!')
-    print('='*50)
-    print('Server: http://localhost:5000')
-    print('Java JDK: Required (java & javac)')
-    print('Status: Ready')
-    print('='*50 + '\n')
-    print('Open index.html in browser!')
-    print('Keep this window open\n')
-    
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
