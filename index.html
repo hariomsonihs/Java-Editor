@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Java Code Editor</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#007acc">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -182,13 +182,13 @@
             
             // Load file manager first
             const fileManagerScript = document.createElement('script');
-            fileManagerScript.src = 'file-manager.js';
+            fileManagerScript.src = './file-manager.js';
             fileManagerScript.onload = function() {
                 console.log('File manager loaded');
                 
                 // Then load app.js
                 const appScript = document.createElement('script');
-                appScript.src = 'app.js';
+                appScript.src = './app.js';
                 appScript.onload = function() {
                     console.log('App.js loaded - Editor ready!');
                 };
