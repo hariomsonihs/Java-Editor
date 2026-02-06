@@ -1,13 +1,18 @@
 let editor;
 let isEditorDirty = false;
+let monacoLoaded = false;
 
 require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
 
 require(['vs/editor/editor.main'], function () {
-    initializeEditor();
-    initializeUI();
-    loadSettings();
-    renderProjects();
+    monacoLoaded = true;
+    console.log('Monaco loaded successfully');
+    setTimeout(() => {
+        initializeEditor();
+        initializeUI();
+        loadSettings();
+        renderProjects();
+    }, 200);
 });
 
 function initializeEditor() {
@@ -17,54 +22,62 @@ function initializeEditor() {
         return;
     }
 
-    editor = monaco.editor.create(editorContainer, {
-        value: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
-        language: 'java',
-        theme: 'vs-dark',
-        automaticLayout: true,
-        fontSize: 14,
-        minimap: { enabled: window.innerWidth > 768 },
-        scrollBeyondLastLine: false,
-        wordWrap: 'on',
-        lineNumbers: 'on',
-        renderWhitespace: 'selection',
-        tabSize: 4,
-        insertSpaces: true,
-        formatOnPaste: true,
-        formatOnType: true,
-        autoIndent: 'full',
-        suggestOnTriggerCharacters: true,
-        quickSuggestions: true,
-        parameterHints: { enabled: true },
-        folding: true,
-        foldingStrategy: 'indentation',
-        showFoldingControls: 'always',
-        matchBrackets: 'always',
-        autoClosingBrackets: 'always',
-        autoClosingQuotes: 'always',
-        snippetSuggestions: 'top',
-        glyphMargin: false,
-        fixedOverflowWidgets: true
-    });
+    console.log('Creating Monaco editor...');
+    
+    try {
+        editor = monaco.editor.create(editorContainer, {
+            value: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+            language: 'java',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            fontSize: 14,
+            minimap: { enabled: window.innerWidth > 768 },
+            scrollBeyondLastLine: false,
+            wordWrap: 'on',
+            lineNumbers: 'on',
+            renderWhitespace: 'selection',
+            tabSize: 4,
+            insertSpaces: true,
+            formatOnPaste: true,
+            formatOnType: true,
+            autoIndent: 'full',
+            suggestOnTriggerCharacters: true,
+            quickSuggestions: true,
+            parameterHints: { enabled: true },
+            folding: true,
+            foldingStrategy: 'indentation',
+            showFoldingControls: 'always',
+            matchBrackets: 'always',
+            autoClosingBrackets: 'always',
+            autoClosingQuotes: 'always',
+            snippetSuggestions: 'top',
+            glyphMargin: false,
+            fixedOverflowWidgets: true,
+            readOnly: false,
+            domReadOnly: false
+        });
 
-    // Force layout after creation
-    setTimeout(() => {
-        if (editor) {
-            editor.layout();
-        }
-    }, 100);
+        console.log('Editor created successfully');
 
-    editor.onDidChangeModelContent(() => {
-        isEditorDirty = true;
-        updateSaveIndicator(false);
-    });
+        // Force layout multiple times
+        setTimeout(() => editor && editor.layout(), 100);
+        setTimeout(() => editor && editor.layout(), 300);
+        setTimeout(() => editor && editor.layout(), 500);
 
-    window.addEventListener('resize', () => {
-        if (editor) {
-            editor.layout();
-            editor.updateOptions({ minimap: { enabled: window.innerWidth > 768 } });
-        }
-    });
+        editor.onDidChangeModelContent(() => {
+            isEditorDirty = true;
+            updateSaveIndicator(false);
+        });
+
+        window.addEventListener('resize', () => {
+            if (editor) {
+                editor.layout();
+                editor.updateOptions({ minimap: { enabled: window.innerWidth > 768 } });
+            }
+        });
+    } catch (error) {
+        console.error('Error creating editor:', error);
+    }
 }
 
 function initializeUI() {
