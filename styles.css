@@ -171,10 +171,16 @@ body {
     margin-left: auto;
     display: flex;
     gap: 4px;
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.2s;
 }
 
+.project-item .file-actions,
+.file-item .file-actions {
+    opacity: 0;
+}
+
+.project-item:hover .file-actions,
 .file-item:hover .file-actions {
     opacity: 1;
 }

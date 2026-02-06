@@ -7,12 +7,41 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#007acc">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Ace Editor -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/mode-java.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/theme-monokai.js"></script>
+    <!-- Simple Textarea Editor (fallback) -->
+    <style>
+        #editor {
+            width: 100%;
+            height: 100%;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            padding: 10px 10px 10px 50px;
+            border: none;
+            outline: none;
+            resize: none;
+            line-height: 1.6;
+            tab-size: 4;
+        }
+        
+        .editor-container {
+            position: relative;
+            background: #1e1e1e;
+        }
+        
+        .editor-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: #252526;
+            border-right: 1px solid #3e3e42;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -71,7 +100,7 @@
             </header>
 
             <div class="editor-container">
-                <div id="editor"></div>
+                <textarea id="editor" spellcheck="false"></textarea>
             </div>
 
             <div class="output-panel" id="outputPanel">
@@ -171,35 +200,7 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
-    <script>
-        // Register service worker for PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(() => console.log('Service Worker registered'))
-                .catch(err => console.log('Service Worker registration failed:', err));
-        }
-
-        // Wait for page load
-        window.addEventListener('load', function() {
-            console.log('Page loaded, initializing...');
-            
-            // Load file manager first
-            const fileManagerScript = document.createElement('script');
-            fileManagerScript.src = './file-manager.js';
-            fileManagerScript.onload = function() {
-                console.log('File manager loaded');
-                
-                // Then load app.js
-                const appScript = document.createElement('script');
-                appScript.src = './app.js';
-                appScript.onload = function() {
-                    console.log('App.js loaded - Editor ready!');
-                };
-                document.body.appendChild(appScript);
-            };
-            document.body.appendChild(fileManagerScript);
-        });
-    </script>
+    <script src="./file-manager.js?v=2"></script>
+    <script src="./app.js?v=6"></script>
 </body>
 </html>

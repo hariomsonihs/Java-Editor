@@ -2,41 +2,85 @@ let editor;
 let isEditorDirty = false;
 
 // Initialize after everything loads
-window.addEventListener('load', function() {
-    console.log('Window loaded, initializing Editor...');
+if (document.readyState === 'loading') {
+    window.addEventListener('load', function() {
+        console.log('Window loaded, initializing Ace Editor...');
+        setTimeout(() => {
+            initializeEditor();
+            initializeUI();
+            loadSettings();
+            renderProjects();
+        }, 100);
+    });
+} else {
+    console.log('Document already loaded, initializing immediately...');
     setTimeout(() => {
         initializeEditor();
         initializeUI();
         loadSettings();
         renderProjects();
     }, 100);
-});
+}
 
+// Initialize Ace Editor
 function initializeEditor() {
-    console.log('Initializing Textarea Editor...');
+    console.log('Initializing Ace Editor...');
     
-    editor = document.getElementById('editor');
-    if (!editor) {
-        console.error('Editor element not found!');
-        return;
-    }
+    editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/java");
+    editor.setValue('public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}', -1);
     
-    editor.value = 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}';
+    // Enable all keyboard shortcuts and behaviors
+    editor.setOptions({
+        fontSize: "14px",
+        showPrintMargin: false,
+        tabSize: 4,
+        useSoftTabs: true,
+        enableMultiselect: true,
+        highlightActiveLine: true,
+        highlightSelectedWord: true,
+        behavioursEnabled: true,
+        wrapBehavioursEnabled: true,
+        enableBasicAutocompletion: false,
+        enableLiveAutocompletion: false
+    });
     
-    editor.addEventListener('keydown', function(e) {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-            this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
-            this.selectionStart = this.selectionEnd = start + 4;
+    // Ensure editor is fully interactive
+    editor.setReadOnly(false);
+    editor.renderer.setShowGutter(true);
+    editor.setHighlightActiveLine(true);
+    
+    // Enable standard keyboard commands
+    editor.commands.addCommand({
+        name: 'selectAll',
+        bindKey: {win: 'Ctrl-A', mac: 'Command-A'},
+        exec: function(editor) {
+            editor.selectAll();
         }
     });
     
-    editor.addEventListener('input', function() {
+    editor.commands.addCommand({
+        name: 'copy',
+        bindKey: {win: 'Ctrl-C', mac: 'Command-C'},
+        exec: function(editor) {
+            document.execCommand('copy');
+        }
+    });
+    
+    editor.commands.addCommand({
+        name: 'paste',
+        bindKey: {win: 'Ctrl-V', mac: 'Command-V'},
+        exec: function(editor) {
+            document.execCommand('paste');
+        }
+    });
+
+    editor.session.on('change', function() {
         isEditorDirty = true;
         updateSaveIndicator(false);
         
+        // Auto-save after 2 seconds of inactivity
         clearTimeout(window.autoSaveTimeout);
         window.autoSaveTimeout = setTimeout(() => {
             if (isEditorDirty) {
@@ -44,13 +88,16 @@ function initializeEditor() {
             }
         }, 2000);
     });
+
+    console.log('Ace Editor initialized successfully');
     
-    console.log('Textarea Editor initialized successfully');
-    
+    // Auto-save initial content after 1 second
     setTimeout(() => {
         saveCurrentFile();
     }, 1000);
 }
+
+
 
 function initializeUI() {
     const menuBtn = document.getElementById('menuBtn');
@@ -77,6 +124,7 @@ function initializeUI() {
 
     document.getElementById('newFile').addEventListener('click', () => {
         if (!fileManager.currentProject) {
+            // Auto-create default project
             const defaultProject = fileManager.createProject('My Project');
             if (defaultProject) {
                 renderProjects();
@@ -143,9 +191,19 @@ function initializeUI() {
         }
     });
 
+    document.getElementById('themeSelect').addEventListener('change', (e) => {
+        const themes = {
+            'vs-dark': 'ace/theme/monokai',
+            'vs-light': 'ace/theme/chrome',
+            'hc-black': 'ace/theme/terminal'
+        };
+        editor.setTheme(themes[e.target.value] || 'ace/theme/monokai');
+        localStorage.setItem('editorTheme', e.target.value);
+    });
+
     document.getElementById('fontSize').addEventListener('change', (e) => {
         const size = parseInt(e.target.value);
-        editor.style.fontSize = size + 'px';
+        editor.setFontSize(size + 'px');
         localStorage.setItem('editorFontSize', size);
     });
 
@@ -280,7 +338,7 @@ function openFile(fileId) {
     const file = fileManager.setCurrentFile(fileId);
     if (!file) return;
 
-    editor.value = file.content;
+    editor.setValue(file.content, -1);
     document.getElementById('currentFileName').textContent = file.name;
     isEditorDirty = false;
     updateSaveIndicator(true);
@@ -294,8 +352,9 @@ function openFile(fileId) {
 
 function saveCurrentFile() {
     if (!fileManager.currentProject || !fileManager.currentFile) {
+        // Only auto-create if there are NO projects at all
         if (fileManager.projects.length === 0) {
-            const code = editor.value;
+            const code = editor.getValue();
             const classMatch = code.match(/public\s+class\s+(\w+)/);
             const className = classMatch ? classMatch[1] : 'Main';
             
@@ -309,12 +368,13 @@ function saveCurrentFile() {
                 renderFiles();
             }
         } else {
+            // Projects exist but none selected - don't save
             return;
         }
     }
 
     if (fileManager.currentProject && fileManager.currentFile) {
-        const content = editor.value;
+        const content = editor.getValue();
         fileManager.updateFileContent(
             fileManager.currentProject.id,
             fileManager.currentFile.id,
@@ -342,7 +402,7 @@ function deleteProject(projectId) {
         renderProjects();
         renderFiles();
         if (!fileManager.currentProject) {
-            editor.value = 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}';
+            editor.setValue('public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}', -1);
             document.getElementById('currentFileName').textContent = 'Untitled.java';
         }
     }
@@ -353,7 +413,7 @@ function deleteFile(fileId) {
         fileManager.deleteFile(fileManager.currentProject.id, fileId);
         renderFiles();
         if (fileManager.currentFile?.id === fileId) {
-            editor.value = '';
+            editor.setValue('', -1);
             document.getElementById('currentFileName').textContent = 'Untitled.java';
         }
     }
@@ -368,7 +428,7 @@ function downloadCurrentFile() {
         saveCurrentFile();
         fileManager.exportFile(fileManager.currentFile.id);
     } else {
-        const content = editor.value;
+        const content = editor.getValue();
         const blob = new Blob([content], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -388,7 +448,7 @@ let executionState = {
 };
 
 function runCode() {
-    const code = editor.value;
+    const code = editor.getValue();
     const outputPanel = document.getElementById('outputPanel');
     const outputContent = document.getElementById('outputContent');
     const consoleInputArea = document.getElementById('consoleInputArea');
@@ -448,7 +508,7 @@ function promptForInput() {
     executionState.waitingForInput = true;
     consoleInputArea.style.display = 'flex';
     
-    const code = editor.value;
+    const code = editor.getValue();
     const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean)\s*\(/g) || []).length;
     
     if (executionState.inputIndex < inputCount) {
@@ -474,7 +534,7 @@ function submitConsoleInput() {
     executionState.inputIndex++;
     inputField.value = '';
     
-    const code = editor.value;
+    const code = editor.getValue();
     const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean)\s*\(/g) || []).length;
     
     if (executionState.inputIndex < inputCount) {
@@ -542,13 +602,21 @@ function escapeHtml(text) {
 }
 
 function loadSettings() {
+    const theme = localStorage.getItem('editorTheme') || 'vs-dark';
     const fontSize = localStorage.getItem('editorFontSize') || 14;
     const autoSave = localStorage.getItem('autoSaveEnabled') !== 'false';
 
+    document.getElementById('themeSelect').value = theme;
     document.getElementById('fontSize').value = fontSize;
     document.getElementById('autoSave').checked = autoSave;
 
-    editor.style.fontSize = fontSize + 'px';
+    const themes = {
+        'vs-dark': 'ace/theme/monokai',
+        'vs-light': 'ace/theme/chrome',
+        'hc-black': 'ace/theme/terminal'
+    };
+    editor.setTheme(themes[theme] || 'ace/theme/monokai');
+    editor.setFontSize(fontSize + 'px');
 
     if (autoSave) {
         startAutoSave();
