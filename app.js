@@ -29,24 +29,24 @@ function initializeEditor() {
             value: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
             language: 'java',
             theme: 'vs-dark',
-            automaticLayout: true,
+            automaticLayout: false,
             fontSize: 14,
-            minimap: { enabled: window.innerWidth > 768 },
+            minimap: { enabled: false },
             scrollBeyondLastLine: false,
-            wordWrap: 'on',
+            wordWrap: 'off',
             lineNumbers: 'on',
-            renderWhitespace: 'selection',
+            renderWhitespace: 'none',
             tabSize: 4,
             insertSpaces: true,
             formatOnPaste: true,
-            formatOnType: true,
+            formatOnType: false,
             autoIndent: 'full',
             suggestOnTriggerCharacters: true,
             quickSuggestions: true,
             parameterHints: { enabled: true },
             folding: true,
             foldingStrategy: 'indentation',
-            showFoldingControls: 'always',
+            showFoldingControls: 'mouseover',
             matchBrackets: 'always',
             autoClosingBrackets: 'always',
             autoClosingQuotes: 'always',
@@ -54,15 +54,34 @@ function initializeEditor() {
             glyphMargin: false,
             fixedOverflowWidgets: true,
             readOnly: false,
-            domReadOnly: false
+            domReadOnly: false,
+            scrollbar: {
+                vertical: 'visible',
+                horizontal: 'visible',
+                useShadows: false,
+                verticalScrollbarSize: 10,
+                horizontalScrollbarSize: 10
+            }
         });
 
         console.log('Editor created successfully');
 
+        // Manual layout management
+        const layoutEditor = () => {
+            if (editor && editorContainer) {
+                const width = editorContainer.offsetWidth;
+                const height = editorContainer.offsetHeight;
+                if (width > 0 && height > 0) {
+                    editor.layout({ width, height });
+                }
+            }
+        };
+
         // Force layout multiple times
-        setTimeout(() => editor && editor.layout(), 100);
-        setTimeout(() => editor && editor.layout(), 300);
-        setTimeout(() => editor && editor.layout(), 500);
+        setTimeout(layoutEditor, 50);
+        setTimeout(layoutEditor, 200);
+        setTimeout(layoutEditor, 500);
+        setTimeout(layoutEditor, 1000);
 
         editor.onDidChangeModelContent(() => {
             isEditorDirty = true;
@@ -71,8 +90,14 @@ function initializeEditor() {
 
         window.addEventListener('resize', () => {
             if (editor) {
-                editor.layout();
-                editor.updateOptions({ minimap: { enabled: window.innerWidth > 768 } });
+                layoutEditor();
+            }
+        });
+
+        // Layout on visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && editor) {
+                setTimeout(layoutEditor, 100);
             }
         });
     } catch (error) {
