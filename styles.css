@@ -381,29 +381,39 @@ body {
     margin-bottom: 0;
 }
 
+.output-panel.resizable {
+    height: auto !important;
+}
+
 .resize-handle {
     display: none;
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 20px;
+    height: 30px;
     cursor: ns-resize;
     z-index: 100;
     justify-content: center;
     align-items: center;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .resize-bar {
-    width: 40px;
-    height: 4px;
+    width: 50px;
+    height: 5px;
     background: var(--border-color);
-    border-radius: 2px;
+    border-radius: 3px;
     transition: background 0.2s;
+    pointer-events: none;
 }
 
-.resize-handle:active .resize-bar {
+.resize-handle:active .resize-bar,
+.resize-handle.dragging .resize-bar {
     background: var(--primary-color);
+    height: 6px;
 }
 
 .output-header {

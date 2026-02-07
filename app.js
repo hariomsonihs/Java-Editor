@@ -149,7 +149,10 @@ function initializeUI() {
     });
 
     document.getElementById('closeOutput').addEventListener('click', () => {
-        document.getElementById('outputPanel').classList.remove('active');
+        const outputPanel = document.getElementById('outputPanel');
+        outputPanel.classList.remove('active');
+        outputPanel.classList.remove('resizable');
+        outputPanel.style.height = '0';
     });
 
     document.getElementById('clearConsole').addEventListener('click', () => {
@@ -777,23 +780,41 @@ function initializeResizeHandle() {
     let isResizing = false;
 
     resizeHandle.addEventListener('touchstart', (e) => {
+        if (!outputPanel.classList.contains('active')) return;
+        
         isResizing = true;
         startY = e.touches[0].clientY;
         startHeight = outputPanel.offsetHeight;
+        outputPanel.classList.add('resizable');
+        resizeHandle.classList.add('dragging');
         e.preventDefault();
-    });
+        e.stopPropagation();
+    }, { passive: false });
 
     document.addEventListener('touchmove', (e) => {
         if (!isResizing) return;
         
-        const deltaY = startY - e.touches[0].clientY;
-        const newHeight = Math.min(Math.max(150, startHeight + deltaY), window.innerHeight * 0.7);
+        const currentY = e.touches[0].clientY;
+        const deltaY = startY - currentY;
+        const newHeight = Math.min(Math.max(150, startHeight + deltaY), window.innerHeight * 0.75);
         
         outputPanel.style.height = newHeight + 'px';
         e.preventDefault();
-    });
+        e.stopPropagation();
+    }, { passive: false });
 
-    document.addEventListener('touchend', () => {
-        isResizing = false;
+    document.addEventListener('touchend', (e) => {
+        if (isResizing) {
+            isResizing = false;
+            resizeHandle.classList.remove('dragging');
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener('touchcancel', () => {
+        if (isResizing) {
+            isResizing = false;
+            resizeHandle.classList.remove('dragging');
+        }
     });
 }
