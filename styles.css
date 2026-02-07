@@ -372,12 +372,38 @@ body {
     flex-direction: column;
     transition: none;
     overflow: hidden;
+    position: relative;
 }
 
 .output-panel.active {
     height: 300px !important;
     display: flex !important;
     margin-bottom: 0;
+}
+
+.resize-handle {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    cursor: ns-resize;
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+
+.resize-bar {
+    width: 40px;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    transition: background 0.2s;
+}
+
+.resize-handle:active .resize-bar {
+    background: var(--primary-color);
 }
 
 .output-header {
@@ -698,16 +724,19 @@ body {
         display: none;
     }
 
+    .resize-handle {
+        display: flex;
+    }
+
     .output-panel.active {
         height: 280px;
         max-height: 50vh;
         margin-bottom: 0;
-        padding-bottom: 60px;
     }
 
     .output-content {
         padding-bottom: 20px;
-        max-height: calc(100% - 120px);
+        max-height: calc(100% - 100px);
     }
 
     .console-input-area {
@@ -753,12 +782,11 @@ body {
     .output-panel.active {
         height: 250px;
         max-height: 50vh;
-        padding-bottom: 70px;
     }
 
     .output-content {
-        padding-bottom: 20px;
-        max-height: calc(100% - 130px);
+        padding-bottom: 10px;
+        max-height: calc(100% - 110px);
     }
 
     .console-input-area {

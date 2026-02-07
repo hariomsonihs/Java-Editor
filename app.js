@@ -27,12 +27,33 @@ function initializeEditor() {
     editor.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
             e.preventDefault();
+            e.stopPropagation();
             const start = this.selectionStart;
             const end = this.selectionEnd;
-            this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
-            this.selectionStart = this.selectionEnd = start + 4;
+            const spaces = '    ';
+            this.value = this.value.substring(0, start) + spaces + this.value.substring(end);
+            this.selectionStart = this.selectionEnd = start + spaces.length;
+            return false;
         }
-    });
+        
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation();
+            const start = this.selectionStart;
+            const textBeforeCursor = this.value.substring(0, start);
+            const currentLineStart = textBeforeCursor.lastIndexOf('\n') + 1;
+            const currentLine = textBeforeCursor.substring(currentLineStart);
+            const indent = currentLine.match(/^\s*/)[0];
+            
+            // Check if line ends with { to add extra indent
+            const extraIndent = currentLine.trim().endsWith('{') ? '    ' : '';
+            
+            const newText = '\n' + indent + extraIndent;
+            this.value = this.value.substring(0, start) + newText + this.value.substring(this.selectionEnd);
+            this.selectionStart = this.selectionEnd = start + newText.length;
+            return false;
+        }
+    }, true);
     
     editor.addEventListener('input', function() {
         isEditorDirty = true;
@@ -76,6 +97,9 @@ function initializeUI() {
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
     }
+
+    // Initialize resize functionality for mobile
+    initializeResizeHandle();
 
     document.getElementById('newProject').addEventListener('click', () => {
         document.getElementById('projectModal').classList.add('active');
@@ -743,3 +767,33 @@ window.addEventListener('beforeunload', (e) => {
         e.returnValue = '';
     }
 });
+
+// Resize handle functionality for mobile
+function initializeResizeHandle() {
+    const resizeHandle = document.getElementById('resizeHandle');
+    const outputPanel = document.getElementById('outputPanel');
+    let startY = 0;
+    let startHeight = 0;
+    let isResizing = false;
+
+    resizeHandle.addEventListener('touchstart', (e) => {
+        isResizing = true;
+        startY = e.touches[0].clientY;
+        startHeight = outputPanel.offsetHeight;
+        e.preventDefault();
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        if (!isResizing) return;
+        
+        const deltaY = startY - e.touches[0].clientY;
+        const newHeight = Math.min(Math.max(150, startHeight + deltaY), window.innerHeight * 0.7);
+        
+        outputPanel.style.height = newHeight + 'px';
+        e.preventDefault();
+    });
+
+    document.addEventListener('touchend', () => {
+        isResizing = false;
+    });
+}
