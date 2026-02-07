@@ -1,82 +1,47 @@
 let editor;
 let isEditorDirty = false;
 
-// Initialize after everything loads
 window.addEventListener('load', function() {
-    console.log('Window loaded, initializing Editor...');
     setTimeout(() => {
         initializeEditor();
         initializeUI();
         loadSettings();
-        console.log('Loading projects from localStorage...');
-        console.log('Projects:', fileManager.projects);
         renderProjects();
         restoreLastSession();
     }, 100);
 });
 
 function initializeEditor() {
-    console.log('Initializing Textarea Editor...');
-    
-    editor = document.getElementById('editor');
-    if (!editor) {
-        console.error('Editor element not found!');
-        return;
-    }
-    
-    editor.value = 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}';
-    
-    editor.addEventListener('keydown', function(e) {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            e.stopPropagation();
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-            const spaces = '    ';
-            this.value = this.value.substring(0, start) + spaces + this.value.substring(end);
-            this.selectionStart = this.selectionEnd = start + spaces.length;
-            return false;
-        }
-        
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            e.stopPropagation();
-            const start = this.selectionStart;
-            const textBeforeCursor = this.value.substring(0, start);
-            const currentLineStart = textBeforeCursor.lastIndexOf('\n') + 1;
-            const currentLine = textBeforeCursor.substring(currentLineStart);
-            const indent = currentLine.match(/^\s*/)[0];
-            
-            // Check if line ends with { to add extra indent
-            const extraIndent = currentLine.trim().endsWith('{') ? '    ' : '';
-            
-            const newText = '\n' + indent + extraIndent;
-            this.value = this.value.substring(0, start) + newText + this.value.substring(this.selectionEnd);
-            this.selectionStart = this.selectionEnd = start + newText.length;
-            return false;
-        }
-    }, true);
-    
-    editor.addEventListener('input', function() {
-        isEditorDirty = true;
-        updateSaveIndicator(false);
-        
-        // Auto-sync class name with filename
-        autoSyncClassAndFilename();
-        
-        clearTimeout(window.autoSaveTimeout);
-        window.autoSaveTimeout = setTimeout(() => {
-            if (isEditorDirty) {
-                saveCurrentFile();
-            }
-        }, 2000);
+    editor = ace.edit('editor');
+    editor.setTheme('ace/theme/monokai');
+    editor.session.setMode('ace/mode/java');
+    editor.setOptions({
+        fontSize: 14,
+        showPrintMargin: false,
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: false
     });
     
-    console.log('Textarea Editor initialized successfully');
+    // Enable word wrap for all devices
+    editor.session.setUseWrapMode(true);
     
-    setTimeout(() => {
-        saveCurrentFile();
-    }, 1000);
+    editor.setValue('public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}', -1);
+    
+    editor.focus();
+    
+    editor.container.addEventListener('click', () => {
+        editor.focus();
+    });
+    
+    editor.session.on('change', function() {
+        isEditorDirty = true;
+        updateSaveIndicator(false);
+        autoSyncClassAndFilename();
+        clearTimeout(window.autoSaveTimeout);
+        window.autoSaveTimeout = setTimeout(() => { if (isEditorDirty) saveCurrentFile(); }, 2000);
+    });
+    
+    setTimeout(() => saveCurrentFile(), 1000);
 }
 
 function initializeUI() {
@@ -194,51 +159,15 @@ function initializeUI() {
 
     document.getElementById('fontSize').addEventListener('change', (e) => {
         const size = parseInt(e.target.value);
-        editor.style.fontSize = size + 'px';
+        editor.setFontSize(size);
         localStorage.setItem('editorFontSize', size);
     });
 
     document.getElementById('themeSelect').addEventListener('change', (e) => {
         const theme = e.target.value;
-        applyTheme(theme);
+        if (theme === 'vs-light') editor.setTheme('ace/theme/chrome');
+        else editor.setTheme('ace/theme/monokai');
         localStorage.setItem('editorTheme', theme);
-    });
-
-    document.getElementById('fontFamily').addEventListener('change', (e) => {
-        const font = e.target.value;
-        editor.style.fontFamily = font;
-        localStorage.setItem('editorFontFamily', font);
-    });
-
-    document.getElementById('tabSize').addEventListener('change', (e) => {
-        const size = e.target.value;
-        editor.style.tabSize = size;
-        localStorage.setItem('editorTabSize', size);
-    });
-
-    document.getElementById('lineHeight').addEventListener('change', (e) => {
-        const height = e.target.value;
-        editor.style.lineHeight = height;
-        localStorage.setItem('editorLineHeight', height);
-    });
-
-    document.getElementById('wordWrap').addEventListener('change', (e) => {
-        const wrap = e.target.checked;
-        editor.style.whiteSpace = wrap ? 'pre-wrap' : 'pre';
-        localStorage.setItem('editorWordWrap', wrap);
-    });
-
-    document.getElementById('showLineNumbers').addEventListener('change', (e) => {
-        const show = e.target.checked;
-        const container = document.querySelector('.editor-container');
-        if (show) {
-            container.classList.add('show-line-numbers');
-            editor.style.paddingLeft = '50px';
-        } else {
-            container.classList.remove('show-line-numbers');
-            editor.style.paddingLeft = '10px';
-        }
-        localStorage.setItem('editorShowLineNumbers', show);
     });
 
     document.getElementById('autoSave').addEventListener('change', (e) => {
@@ -409,22 +338,16 @@ function renderFiles() {
 
 function openFile(fileId) {
     if (executionState.waitingForInput) return;
-    
-    if (isEditorDirty) {
-        saveCurrentFile();
-    }
-
+    if (isEditorDirty) saveCurrentFile();
     const file = fileManager.setCurrentFile(fileId);
     if (!file) return;
-
-    editor.value = file.content;
+    editor.setValue(file.content, -1);
     document.getElementById('currentFileName').textContent = file.name;
     document.getElementById('currentFileNameMobile').textContent = file.name;
     isEditorDirty = false;
     updateSaveIndicator(true);
     localStorage.setItem('lastOpenedFileId', fileId);
     renderProjects();
-
     if (window.innerWidth <= 768) {
         document.getElementById('sidebar').classList.remove('active');
         document.getElementById('overlay').classList.remove('active');
@@ -432,11 +355,7 @@ function openFile(fileId) {
 }
 
 function saveCurrentFile() {
-    if (!fileManager.currentFile) {
-        return;
-    }
-
-    // Find which project contains this file
+    if (!fileManager.currentFile) return;
     let projectId = null;
     for (const project of fileManager.projects) {
         if (project.files.find(f => f.id === fileManager.currentFile.id)) {
@@ -444,13 +363,8 @@ function saveCurrentFile() {
             break;
         }
     }
-
-    const content = editor.value;
-    fileManager.updateFileContent(
-        projectId,
-        fileManager.currentFile.id,
-        content
-    );
+    const content = editor.getValue();
+    fileManager.updateFileContent(projectId, fileManager.currentFile.id, content);
     isEditorDirty = false;
     updateSaveIndicator(true);
 }
@@ -497,7 +411,7 @@ function downloadCurrentFile() {
         saveCurrentFile();
         fileManager.exportFile(fileManager.currentFile.id);
     } else {
-        const content = editor.value;
+        const content = editor.getValue();
         const blob = new Blob([content], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -513,22 +427,14 @@ let lastDetectedClassName = null;
 
 function autoSyncClassAndFilename() {
     if (!fileManager.currentFile) return;
-    
-    const code = editor.value;
+    const code = editor.getValue();
     const classMatch = code.match(/public\s+class\s+(\w+)/);
-    
     if (classMatch) {
         const detectedClassName = classMatch[1];
         const currentFileName = fileManager.currentFile.name.replace('.java', '');
-        
-        // Only trigger if class name actually changed
         if (detectedClassName !== lastDetectedClassName && detectedClassName !== currentFileName) {
             lastDetectedClassName = detectedClassName;
-            
-            // Auto-update filename to match class name
             const newFileName = detectedClassName + '.java';
-            
-            // Check if file with this name already exists
             let projectId = null;
             for (const project of fileManager.projects) {
                 if (project.files.find(f => f.id === fileManager.currentFile.id)) {
@@ -536,12 +442,10 @@ function autoSyncClassAndFilename() {
                     break;
                 }
             }
-            
             const project = fileManager.projects.find(p => p.id === projectId);
             if (project) {
                 const existingFile = project.files.find(f => f.name === newFileName && f.id !== fileManager.currentFile.id);
                 if (!existingFile) {
-                    // Update filename automatically
                     fileManager.currentFile.name = newFileName;
                     document.getElementById('currentFileName').textContent = newFileName;
                     document.getElementById('currentFileNameMobile').textContent = newFileName;
@@ -576,14 +480,12 @@ function renameFile(projectId, fileId) {
         
         file.name = finalName;
         
-        // If this is the current file, update class name in code
         if (fileManager.currentFile?.id === fileId) {
             const newClassName = finalName.replace('.java', '');
-            const code = editor.value;
+            const code = editor.getValue();
             const updatedCode = code.replace(/public\s+class\s+\w+/, `public class ${newClassName}`);
-            editor.value = updatedCode;
+            editor.setValue(updatedCode, -1);
             file.content = updatedCode;
-            
             document.getElementById('currentFileName').textContent = file.name;
             document.getElementById('currentFileNameMobile').textContent = file.name;
             lastDetectedClassName = newClassName;
@@ -615,7 +517,7 @@ let executionState = {
 };
 
 function runCode() {
-    const code = editor.value;
+    const code = editor.getValue();
     const outputPanel = document.getElementById('outputPanel');
     const outputContent = document.getElementById('outputContent');
     const consoleInputArea = document.getElementById('consoleInputArea');
@@ -692,18 +594,14 @@ function handleInteractiveExecution(code) {
 function promptForInput() {
     const consoleInputArea = document.getElementById('consoleInputArea');
     const inputField = document.getElementById('consoleInput');
-    
     executionState.waitingForInput = true;
     consoleInputArea.style.display = 'flex';
-    
-    const code = editor.value;
+    const code = editor.getValue();
     const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean)\s*\(/g) || []).length;
-    
     if (executionState.inputIndex < inputCount) {
         const currentPrompt = executionState.prompts[executionState.inputIndex] || '';
         inputField.placeholder = currentPrompt || 'Enter input...';
     }
-    
     inputField.focus();
 }
 
@@ -722,7 +620,7 @@ function submitConsoleInput() {
     executionState.inputIndex++;
     inputField.value = '';
     
-    const code = editor.value;
+    const code = editor.getValue();
     const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean)\s*\(/g) || []).length;
     
     if (executionState.inputIndex < inputCount) {
@@ -806,82 +704,18 @@ function escapeHtml(text) {
 
 function loadSettings() {
     const fontSize = localStorage.getItem('editorFontSize') || 14;
-    const fontFamily = localStorage.getItem('editorFontFamily') || 'Consolas';
-    const tabSize = localStorage.getItem('editorTabSize') || 4;
-    const lineHeight = localStorage.getItem('editorLineHeight') || 1.6;
-    const wordWrap = localStorage.getItem('editorWordWrap') === 'true';
-    const showLineNumbers = localStorage.getItem('editorShowLineNumbers') !== 'false';
     const autoSave = localStorage.getItem('autoSaveEnabled') !== 'false';
     const theme = localStorage.getItem('editorTheme') || 'vs-dark';
 
     document.getElementById('fontSize').value = fontSize;
-    document.getElementById('fontFamily').value = fontFamily;
-    document.getElementById('tabSize').value = tabSize;
-    document.getElementById('lineHeight').value = lineHeight;
-    document.getElementById('wordWrap').checked = wordWrap;
-    document.getElementById('showLineNumbers').checked = showLineNumbers;
     document.getElementById('autoSave').checked = autoSave;
     document.getElementById('themeSelect').value = theme;
 
-    editor.style.fontSize = fontSize + 'px';
-    editor.style.fontFamily = fontFamily;
-    editor.style.tabSize = tabSize;
-    editor.style.lineHeight = lineHeight;
-    editor.style.whiteSpace = wordWrap ? 'pre-wrap' : 'pre';
-    
-    const container = document.querySelector('.editor-container');
-    if (showLineNumbers) {
-        container.classList.add('show-line-numbers');
-        editor.style.paddingLeft = '50px';
-    } else {
-        container.classList.remove('show-line-numbers');
-        editor.style.paddingLeft = '10px';
-    }
-    
-    applyTheme(theme);
+    editor.setFontSize(parseInt(fontSize));
+    if (theme === 'vs-light') editor.setTheme('ace/theme/chrome');
+    else editor.setTheme('ace/theme/monokai');
 
-    if (autoSave) {
-        startAutoSave();
-    }
-}
-
-function applyTheme(theme) {
-    const body = document.body;
-    const editorEl = document.getElementById('editor');
-    const editorContainer = document.querySelector('.editor-container');
-    const outputContent = document.getElementById('outputContent');
-    
-    if (theme === 'vs-light') {
-        body.style.setProperty('--bg-dark', '#f3f3f3');
-        body.style.setProperty('--bg-darker', '#ffffff');
-        body.style.setProperty('--text-light', '#333333');
-        body.style.setProperty('--text-white', '#000000');
-        body.style.setProperty('--border-color', '#e0e0e0');
-        editorEl.style.background = '#ffffff';
-        editorEl.style.color = '#000000';
-        editorContainer.style.background = '#ffffff';
-        outputContent.style.color = '#000000';
-    } else if (theme === 'hc-black') {
-        body.style.setProperty('--bg-dark', '#000000');
-        body.style.setProperty('--bg-darker', '#000000');
-        body.style.setProperty('--text-light', '#ffffff');
-        body.style.setProperty('--text-white', '#ffffff');
-        body.style.setProperty('--border-color', '#6fc3df');
-        editorEl.style.background = '#000000';
-        editorEl.style.color = '#ffffff';
-        editorContainer.style.background = '#000000';
-        outputContent.style.color = '#ffffff';
-    } else {
-        body.style.setProperty('--bg-dark', '#252526');
-        body.style.setProperty('--bg-darker', '#1e1e1e');
-        body.style.setProperty('--text-light', '#cccccc');
-        body.style.setProperty('--text-white', '#ffffff');
-        body.style.setProperty('--border-color', '#3e3e42');
-        editorEl.style.background = '#1e1e1e';
-        editorEl.style.color = '#d4d4d4';
-        editorContainer.style.background = '#1e1e1e';
-        outputContent.style.color = '#e0e0e0';
-    }
+    if (autoSave) startAutoSave();
 }
 
 function startAutoSave() {
@@ -895,15 +729,11 @@ function startAutoSave() {
 function restoreLastSession() {
     const lastFileId = localStorage.getItem('lastOpenedFileId');
     const lastProjectId = localStorage.getItem('lastOpenedProjectId');
-    
-    if (lastProjectId) {
-        fileManager.setCurrentProject(lastProjectId);
-    }
-    
+    if (lastProjectId) fileManager.setCurrentProject(lastProjectId);
     if (lastFileId) {
         const file = fileManager.setCurrentFile(lastFileId);
         if (file) {
-            editor.value = file.content;
+            editor.setValue(file.content, -1);
             document.getElementById('currentFileName').textContent = file.name;
             document.getElementById('currentFileNameMobile').textContent = file.name;
             isEditorDirty = false;
