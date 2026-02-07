@@ -14,10 +14,28 @@ def compile_java():
     data = request.json
     code = data.get('code', '')
     user_input = data.get('input', '')
+    filename = data.get('filename', '')
     
-    # Extract class name
+    # Extract class name from code
     class_match = re.search(r'public\s+class\s+(\w+)', code)
-    class_name = class_match.group(1) if class_match else 'Main'
+    if not class_match:
+        return jsonify({
+            'success': False,
+            'output': '',
+            'error': 'Error: No public class found in code'
+        })
+    
+    class_name = class_match.group(1)
+    
+    # If filename provided, validate it matches class name
+    if filename:
+        expected_filename = f'{class_name}.java'
+        if filename != expected_filename:
+            return jsonify({
+                'success': False,
+                'output': '',
+                'error': f'Error: Class name "{class_name}" does not match filename "{filename}".\nFilename must be "{expected_filename}" (case-sensitive)'
+            })
     
     # Create temp directory
     temp_dir = tempfile.mkdtemp()

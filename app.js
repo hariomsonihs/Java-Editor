@@ -8,6 +8,8 @@ window.addEventListener('load', function() {
         initializeEditor();
         initializeUI();
         loadSettings();
+        console.log('Loading projects from localStorage...');
+        console.log('Projects:', fileManager.projects);
         renderProjects();
         restoreLastSession();
     }, 100);
@@ -59,6 +61,9 @@ function initializeEditor() {
         isEditorDirty = true;
         updateSaveIndicator(false);
         
+        // Auto-sync class name with filename
+        autoSyncClassAndFilename();
+        
         clearTimeout(window.autoSaveTimeout);
         window.autoSaveTimeout = setTimeout(() => {
             if (isEditorDirty) {
@@ -85,10 +90,13 @@ function initializeUI() {
         overlay.classList.add('active');
     });
 
-    document.getElementById('menuBtnMobile').addEventListener('click', () => {
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-    });
+    const menuBtnMobile = document.getElementById('menuBtnMobile');
+    if (menuBtnMobile) {
+        menuBtnMobile.addEventListener('click', () => {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+        });
+    }
 
     closeSidebar.addEventListener('click', closeSidebarPanel);
     overlay.addEventListener('click', closeSidebarPanel);
@@ -120,7 +128,11 @@ function initializeUI() {
     });
 
     document.getElementById('createFile').addEventListener('click', () => {
-        const name = document.getElementById('fileName').value;
+        const name = document.getElementById('fileName').value.trim();
+        if (!name) {
+            alert('Please enter a file name');
+            return;
+        }
         const projectId = fileManager.currentProject ? fileManager.currentProject.id : null;
         const file = fileManager.createFile(projectId, name);
         if (file) {
@@ -139,14 +151,20 @@ function initializeUI() {
     });
 
     document.getElementById('runCode').addEventListener('click', runCode);
-    document.getElementById('runCodeMobile').addEventListener('click', runCode);
+    const runCodeMobile = document.getElementById('runCodeMobile');
+    if (runCodeMobile) {
+        runCodeMobile.addEventListener('click', runCode);
+    }
     document.getElementById('downloadCode').addEventListener('click', downloadCurrentFile);
     document.getElementById('settingsBtn').addEventListener('click', () => {
         document.getElementById('settingsModal').classList.add('active');
     });
-    document.getElementById('settingsBtnMobile').addEventListener('click', () => {
-        document.getElementById('settingsModal').classList.add('active');
-    });
+    const refreshBtnMobile = document.getElementById('refreshBtnMobile');
+    if (refreshBtnMobile) {
+        refreshBtnMobile.addEventListener('click', () => {
+            location.reload();
+        });
+    }
 
     document.getElementById('closeOutput').addEventListener('click', () => {
         const outputPanel = document.getElementById('outputPanel');
@@ -296,6 +314,9 @@ function renderProjects() {
                 <i class="fas fa-file-code"></i>
                 <span>${file.name}</span>
                 <div class="file-actions">
+                    <button class="file-action-btn" onclick="event.stopPropagation(); renameFile(null, '${file.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
                     <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('${file.id}')">
                         <i class="fas fa-download"></i>
                     </button>
@@ -328,6 +349,9 @@ function renderProjects() {
             <i class="fas fa-folder"></i>
             <span>${project.name}</span>
             <div class="file-actions">
+                <button class="file-action-btn" onclick="renameProject('${project.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
                 <button class="file-action-btn" onclick="deleteProject('${project.id}')">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -351,6 +375,9 @@ function renderProjects() {
                     <i class="fas fa-file-code"></i>
                     <span>${file.name}</span>
                     <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); renameFile('${project.id}', '${file.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
                         <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('${file.id}')">
                             <i class="fas fa-download"></i>
                         </button>
@@ -481,6 +508,104 @@ function downloadCurrentFile() {
     }
 }
 
+// Auto-sync class name with filename
+let lastDetectedClassName = null;
+
+function autoSyncClassAndFilename() {
+    if (!fileManager.currentFile) return;
+    
+    const code = editor.value;
+    const classMatch = code.match(/public\s+class\s+(\w+)/);
+    
+    if (classMatch) {
+        const detectedClassName = classMatch[1];
+        const currentFileName = fileManager.currentFile.name.replace('.java', '');
+        
+        // Only trigger if class name actually changed
+        if (detectedClassName !== lastDetectedClassName && detectedClassName !== currentFileName) {
+            lastDetectedClassName = detectedClassName;
+            
+            // Auto-update filename to match class name
+            const newFileName = detectedClassName + '.java';
+            
+            // Check if file with this name already exists
+            let projectId = null;
+            for (const project of fileManager.projects) {
+                if (project.files.find(f => f.id === fileManager.currentFile.id)) {
+                    projectId = project.id;
+                    break;
+                }
+            }
+            
+            const project = fileManager.projects.find(p => p.id === projectId);
+            if (project) {
+                const existingFile = project.files.find(f => f.name === newFileName && f.id !== fileManager.currentFile.id);
+                if (!existingFile) {
+                    // Update filename automatically
+                    fileManager.currentFile.name = newFileName;
+                    document.getElementById('currentFileName').textContent = newFileName;
+                    document.getElementById('currentFileNameMobile').textContent = newFileName;
+                    fileManager.saveToLocalStorage();
+                    renderProjects();
+                }
+            }
+        }
+    }
+}
+
+function renameFile(projectId, fileId) {
+    const file = fileManager.projects
+        .flatMap(p => p.files)
+        .find(f => f.id === fileId);
+    
+    if (!file) return;
+    
+    const newName = prompt('Enter new file name:', file.name);
+    if (newName && newName.trim() !== '' && newName !== file.name) {
+        const finalName = newName.trim().endsWith('.java') ? newName.trim() : newName.trim() + '.java';
+        
+        // Check for duplicate
+        const project = fileManager.projects.find(p => p.id === projectId);
+        if (project) {
+            const duplicate = project.files.find(f => f.name === finalName && f.id !== fileId);
+            if (duplicate) {
+                alert(`File "${finalName}" already exists!`);
+                return;
+            }
+        }
+        
+        file.name = finalName;
+        
+        // If this is the current file, update class name in code
+        if (fileManager.currentFile?.id === fileId) {
+            const newClassName = finalName.replace('.java', '');
+            const code = editor.value;
+            const updatedCode = code.replace(/public\s+class\s+\w+/, `public class ${newClassName}`);
+            editor.value = updatedCode;
+            file.content = updatedCode;
+            
+            document.getElementById('currentFileName').textContent = file.name;
+            document.getElementById('currentFileNameMobile').textContent = file.name;
+            lastDetectedClassName = newClassName;
+        }
+        
+        fileManager.saveToLocalStorage();
+        renderProjects();
+    }
+}
+
+function renameProject(projectId) {
+    const project = fileManager.projects.find(p => p.id === projectId);
+    if (!project) return;
+    
+    const newName = prompt('Enter new project name:', project.name);
+    if (newName && newName.trim() !== '' && newName !== project.name) {
+        project.name = newName.trim();
+        fileManager.saveToLocalStorage();
+        renderProjects();
+    }
+}
+
 let executionState = {
     inputs: [],
     inputIndex: 0,
@@ -497,6 +622,24 @@ function runCode() {
     const theme = localStorage.getItem('editorTheme') || 'vs-dark';
     const successColor = theme === 'vs-light' ? '#2e7d32' : '#4caf50';
     const warningColor = theme === 'vs-light' ? '#f57c00' : '#ff9800';
+    const errorColor = theme === 'vs-light' ? '#c62828' : '#f44336';
+    
+    // Validate filename and class name match
+    const classMatch = code.match(/public\s+class\s+(\w+)/);
+    if (classMatch) {
+        const className = classMatch[1];
+        const currentFileName = fileManager.currentFile ? fileManager.currentFile.name : 'Main.java';
+        const expectedFileName = className + '.java';
+        
+        if (currentFileName !== expectedFileName) {
+            outputPanel.style.display = 'flex';
+            outputPanel.classList.add('active');
+            outputContent.innerHTML = `<span style="color: ${errorColor};">❌ Error: Class name "${className}" does not match filename "${currentFileName}"</span>\n`;
+            outputContent.innerHTML += `<span style="color: ${warningColor};">Filename must be "${expectedFileName}" (case-sensitive)</span>\n\n`;
+            outputContent.innerHTML += `<span style="color: ${successColor};">💡 Tip: Rename the file or change the class name to match.</span>`;
+            return;
+        }
+    }
     
     executionState = {
         inputs: [],
@@ -612,14 +755,19 @@ function executeWithAPI(code, inputs) {
     
     if (runBtn) runBtn.disabled = true;
     
-    // Change this URL after deploying backend
-    const BACKEND_URL = 'https://java-editor-production.up.railway.app'; // Local: http://localhost:5000
-                                                                           // Deployed: https://java-editor-production.up.railway.app
+    // Get current filename
+    const filename = fileManager.currentFile ? fileManager.currentFile.name : 'Main.java';
+    
+    const BACKEND_URL = 'https://java-editor-production.up.railway.app';
     
     fetch(`${BACKEND_URL}/compile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: code, input: inputs.join('\n') })
+        body: JSON.stringify({ 
+            code: code, 
+            input: inputs.join('\n'),
+            filename: filename
+        })
     })
     .then(response => response.json())
     .then(data => {

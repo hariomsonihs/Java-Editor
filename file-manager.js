@@ -27,6 +27,10 @@ class FileManager {
         localStorage.setItem('javaEditorProjects', JSON.stringify(this.projects));
     }
 
+    saveToLocalStorage() {
+        this.saveProjects();
+    }
+
     createProject(name) {
         if (!name || name.trim() === '') {
             alert('Please enter a project name');
@@ -60,6 +64,7 @@ class FileManager {
             return null;
         }
 
+        fileName = fileName.trim();
         if (!fileName.endsWith('.java')) {
             fileName += '.java';
         }
@@ -70,7 +75,7 @@ class FileManager {
 
         const existingFile = project.files.find(f => f.name === fileName);
         if (existingFile) {
-            alert('File already exists');
+            alert(`File "${fileName}" already exists in this ${projectId ? 'project' : 'location'}!`);
             return null;
         }
 
