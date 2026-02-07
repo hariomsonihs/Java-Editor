@@ -22,16 +22,7 @@ function initializeEditor() {
         enableLiveAutocompletion: false
     });
     
-    // Enable word wrap for all devices
-    editor.session.setUseWrapMode(true);
-    
     editor.setValue('public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}', -1);
-    
-    editor.focus();
-    
-    editor.container.addEventListener('click', () => {
-        editor.focus();
-    });
     
     editor.session.on('change', function() {
         isEditorDirty = true;
@@ -194,6 +185,15 @@ function initializeUI() {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
             e.preventDefault();
             saveCurrentFile();
+        }
+    });
+    
+    // Prevent default backspace behavior outside editor
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.closest('#editor')) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
         }
     });
 }
@@ -569,7 +569,11 @@ function runCode() {
 function handleInteractiveExecution(code) {
     const outputContent = document.getElementById('outputContent');
     
-    const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean)\s*\(/g) || []).length;
+    // Count ALL .next methods including next(), nextLine(), nextInt(), etc.
+    const inputCount = (code.match(/\.next\w*\s*\(/g) || []).length;
+    
+    console.log('DEBUG: Total Scanner inputs detected:', inputCount);
+    console.log('DEBUG: Code snippet:', code.substring(0, 500));
     
     executionState.prompts = [];
     const printMatches = code.match(/System\.out\.print(?:ln)?\s*\([^)]+\)/g) || [];
@@ -585,6 +589,7 @@ function handleInteractiveExecution(code) {
     
     if (inputCount > 0) {
         outputContent.innerHTML += `<span style="color: #9c27b0;">ℹ️ Program expects ${inputCount} input(s). Enter them below:</span>\n\n`;
+        console.log('DEBUG: Starting input collection for', inputCount, 'inputs');
         promptForInput();
     } else {
         executeWithAPI(code, []);
@@ -597,10 +602,11 @@ function promptForInput() {
     executionState.waitingForInput = true;
     consoleInputArea.style.display = 'flex';
     const code = editor.getValue();
-    const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean)\s*\(/g) || []).length;
+    const inputCount = (code.match(/\.next\w*\s*\(/g) || []).length;
+    console.log('DEBUG: promptForInput - inputIndex:', executionState.inputIndex, 'of', inputCount);
     if (executionState.inputIndex < inputCount) {
         const currentPrompt = executionState.prompts[executionState.inputIndex] || '';
-        inputField.placeholder = currentPrompt || 'Enter input...';
+        inputField.placeholder = (currentPrompt || 'Enter input...') + ` (${executionState.inputIndex + 1}/${inputCount})`;
     }
     inputField.focus();
 }
@@ -611,17 +617,19 @@ function submitConsoleInput() {
     const outputContent = document.getElementById('outputContent');
     const outputPanel = document.getElementById('outputPanel');
     
-    if (value.trim() === '') return false;
+    // Allow empty inputs for nextLine() cleanup
     
     const currentPrompt = executionState.prompts[executionState.inputIndex] || `Input ${executionState.inputIndex + 1}`;
     outputContent.innerHTML += `<span style="color: #00bcd4;">${currentPrompt}</span> <span style="color: #4caf50;">${value}</span>\n`;
+    
+    console.log('DEBUG: Input received:', value, '- Index:', executionState.inputIndex);
     
     executionState.inputs.push(value);
     executionState.inputIndex++;
     inputField.value = '';
     
     const code = editor.getValue();
-    const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean)\s*\(/g) || []).length;
+    const inputCount = (code.match(/\.next\w*\s*\(/g) || []).length;
     
     if (executionState.inputIndex < inputCount) {
         promptForInput();
