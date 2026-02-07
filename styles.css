@@ -373,12 +373,14 @@ body {
     transition: none;
     overflow: hidden;
     position: relative;
+    padding-top: 0;
 }
 
 .output-panel.active {
     height: 300px !important;
     display: flex !important;
     margin-bottom: 0;
+    padding-top: 25px;
 }
 
 .output-panel.resizable {
@@ -391,7 +393,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 30px;
+    height: 25px;
     cursor: ns-resize;
     z-index: 100;
     justify-content: center;
@@ -399,14 +401,15 @@ body {
     touch-action: none;
     -webkit-user-select: none;
     user-select: none;
+    background: var(--bg-darker);
 }
 
 .resize-bar {
     width: 50px;
     height: 5px;
-    background: var(--border-color);
+    background: var(--text-light);
     border-radius: 3px;
-    transition: background 0.2s;
+    transition: all 0.2s;
     pointer-events: none;
 }
 
@@ -414,6 +417,7 @@ body {
 .resize-handle.dragging .resize-bar {
     background: var(--primary-color);
     height: 6px;
+    width: 60px;
 }
 
 .output-header {

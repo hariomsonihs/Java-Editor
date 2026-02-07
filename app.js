@@ -757,6 +757,7 @@ function restoreLastSession() {
         if (file) {
             editor.value = file.content;
             document.getElementById('currentFileName').textContent = file.name;
+            document.getElementById('currentFileNameMobile').textContent = file.name;
             isEditorDirty = false;
             updateSaveIndicator(true);
             renderProjects();
@@ -778,14 +779,15 @@ function initializeResizeHandle() {
     let startY = 0;
     let startHeight = 0;
     let isResizing = false;
+    let hasMoved = false;
 
     resizeHandle.addEventListener('touchstart', (e) => {
         if (!outputPanel.classList.contains('active')) return;
         
         isResizing = true;
+        hasMoved = false;
         startY = e.touches[0].clientY;
         startHeight = outputPanel.offsetHeight;
-        outputPanel.classList.add('resizable');
         resizeHandle.classList.add('dragging');
         e.preventDefault();
         e.stopPropagation();
@@ -794,10 +796,14 @@ function initializeResizeHandle() {
     document.addEventListener('touchmove', (e) => {
         if (!isResizing) return;
         
+        hasMoved = true;
         const currentY = e.touches[0].clientY;
         const deltaY = startY - currentY;
         const newHeight = Math.min(Math.max(150, startHeight + deltaY), window.innerHeight * 0.75);
         
+        if (!outputPanel.classList.contains('resizable')) {
+            outputPanel.classList.add('resizable');
+        }
         outputPanel.style.height = newHeight + 'px';
         e.preventDefault();
         e.stopPropagation();
@@ -807,7 +813,10 @@ function initializeResizeHandle() {
         if (isResizing) {
             isResizing = false;
             resizeHandle.classList.remove('dragging');
-            e.preventDefault();
+            if (hasMoved) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
         }
     }, { passive: false });
 
