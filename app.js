@@ -336,11 +336,8 @@ function renderProjects() {
     standaloneFilesList.innerHTML = '';
 
     // Render standalone files (files without project)
-    const standaloneFiles = fileManager.projects
-        .filter(p => p.id === null)
-        .flatMap(p => fileManager.getAllFiles(p.id));
-    
-    const allStandaloneFiles = fileManager.getAllFiles(null);
+    const standaloneProject = fileManager.projects.find(p => p.id === null);
+    const allStandaloneFiles = standaloneProject ? standaloneProject.files : [];
     
     if (allStandaloneFiles.length === 0) {
         standaloneFilesList.innerHTML = '<p style="padding: 8px; font-size: 12px; color: #888;">No standalone files</p>';
