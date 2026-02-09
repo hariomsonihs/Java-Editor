@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Java CodeLab">
     <title>Java CodeLab</title>
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#007acc">
+    <link rel="icon" type="image/png" href="logo.jpeg">
     <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
     <link rel="stylesheet" href="./styles.css?v=3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -42,6 +49,9 @@
             </div>
             
             <div class="sidebar-actions">
+                <button class="btn-primary" id="practiceBtn">
+                    <i class="fas fa-graduation-cap"></i> Practice Programs
+                </button>
                 <button class="btn-primary" id="newProject">
                     <i class="fas fa-folder-plus"></i> New Project
                 </button>
@@ -51,7 +61,7 @@
             </div>
 
             <div class="files-section">
-                <h3>Standalone Files</h3>
+                <h3>My Files</h3>
                 <div id="standaloneFilesList" class="files-list"></div>
             </div>
 
@@ -144,13 +154,13 @@
                     <i class="fas fa-code"></i>
                     <span>Editor</span>
                 </button>
+                <button class="nav-item" data-action="practice">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Practice</span>
+                </button>
                 <button class="nav-item" data-action="files">
                     <i class="fas fa-folder"></i>
                     <span>Files</span>
-                </button>
-                <button class="nav-item" data-action="run">
-                    <i class="fas fa-play"></i>
-                    <span>Run</span>
                 </button>
                 <button class="nav-item" data-action="settings">
                     <i class="fas fa-cog"></i>
@@ -247,6 +257,122 @@
                     <label>Show Line Numbers</label>
                     <input type="checkbox" id="showLineNumbers" checked>
                 </div>
+                <div class="setting-item">
+                    <label>Auto Complete</label>
+                    <input type="checkbox" id="autoComplete" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Highlight Active Line</label>
+                    <input type="checkbox" id="highlightActiveLine" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Show Indent Guides</label>
+                    <input type="checkbox" id="showIndentGuides" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Cursor Style</label>
+                    <select id="cursorStyle" class="input-field">
+                        <option value="ace">Slim</option>
+                        <option value="slim">Slim Animated</option>
+                        <option value="smooth">Smooth</option>
+                        <option value="wide">Wide</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Scroll Speed</label>
+                    <input type="range" id="scrollSpeed" min="1" max="5" value="3" class="input-field">
+                    <span id="scrollSpeedValue">3</span>
+                </div>
+                <div class="setting-item">
+                    <label>Enable Snippets</label>
+                    <input type="checkbox" id="enableSnippets" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Bracket Matching</label>
+                    <input type="checkbox" id="bracketMatching" checked>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal console-modal" id="consoleModal">
+        <div class="console-modal-content">
+            <div class="console-modal-header">
+                <h3><i class="fas fa-terminal"></i> Console Output</h3>
+                <div>
+                    <button class="icon-btn" onclick="document.getElementById('modalOutputContent').innerHTML=''" title="Clear">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                    <button class="icon-btn" id="closeConsoleModal" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="console-modal-body" id="modalOutputContent"></div>
+            <div class="console-modal-input" id="modalInputArea" style="display: none;">
+                <input type="text" id="modalConsoleInput" placeholder="Enter input..." autocomplete="off">
+                <button onclick="submitModalInput()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Practice Modal -->
+    <div class="modal practice-modal" id="practiceModal">
+        <div class="practice-modal-content">
+            <div class="practice-modal-header">
+                <h3><i class="fas fa-graduation-cap"></i> Practice Programs</h3>
+                <button class="icon-btn" onclick="document.getElementById('practiceModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="practice-categories" id="practiceCategories"></div>
+        </div>
+    </div>
+
+    <!-- Programs List Modal -->
+    <div class="modal programs-modal" id="programsModal">
+        <div class="programs-modal-content">
+            <div class="programs-modal-header">
+                <button class="icon-btn" onclick="document.getElementById('programsModal').classList.remove('active'); document.getElementById('practiceModal').classList.add('active');">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h3 id="programsModalTitle">Programs</h3>
+                <button class="icon-btn" onclick="document.getElementById('programsModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="programs-list" id="programsList"></div>
+        </div>
+    </div>
+
+    <!-- Program Detail Modal -->
+    <div class="modal program-detail-modal" id="programDetailModal">
+        <div class="program-detail-content">
+            <div class="program-detail-header">
+                <button class="icon-btn" onclick="document.getElementById('programDetailModal').classList.remove('active'); document.getElementById('programsModal').classList.add('active');">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h3 id="programDetailTitle">Program</h3>
+                <button class="icon-btn" onclick="document.getElementById('programDetailModal').classList.remove('active')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="program-detail-body">
+                <div class="program-info">
+                    <p id="programDescription"></p>
+                    <pre id="programInstruction"></pre>
+                </div>
+                <div class="program-code">
+                    <h4>Code:</h4>
+                    <pre id="programCode"></pre>
+                </div>
+                <div class="program-output">
+                    <h4>Expected Output:</h4>
+                    <pre id="programOutput"></pre>
+                </div>
+                <button class="btn-primary" id="loadProgramBtn" style="width: 100%; margin-top: 16px;">
+                    <i class="fas fa-code"></i> Load in Editor
+                </button>
             </div>
         </div>
     </div>
@@ -254,5 +380,108 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js"></script>
     <script src="./file-manager.js?v=3"></script>
     <script src="./app.js?v=17"></script>
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // Install prompt for PWA
+        let deferredPrompt;
+        let installBtn = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallPromotion();
+        });
+
+        function showInstallPromotion() {
+            // Create install banner
+            const banner = document.createElement('div');
+            banner.id = 'installBanner';
+            banner.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                animation: slideUp 0.3s ease;
+                max-width: 90%;
+            `;
+            banner.innerHTML = `
+                <i class="fas fa-download" style="font-size: 24px;"></i>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">Install Java CodeLab</div>
+                    <div style="font-size: 12px; opacity: 0.9;">Get app-like experience</div>
+                </div>
+                <button id="installAppBtn" style="
+                    background: white;
+                    color: #667eea;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    font-weight: 600;
+                    cursor: pointer;
+                ">Install</button>
+                <button id="dismissInstall" style="
+                    background: transparent;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 20px;
+                    padding: 4px 8px;
+                ">×</button>
+            `;
+            document.body.appendChild(banner);
+
+            document.getElementById('installAppBtn').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response: ${outcome}`);
+                    deferredPrompt = null;
+                    banner.remove();
+                }
+            });
+
+            document.getElementById('dismissInstall').addEventListener('click', () => {
+                banner.remove();
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed successfully');
+            deferredPrompt = null;
+            const banner = document.getElementById('installBanner');
+            if (banner) banner.remove();
+        });
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from { transform: translate(-50%, 100px); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

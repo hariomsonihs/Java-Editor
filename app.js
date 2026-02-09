@@ -19,8 +19,13 @@ function initializeEditor() {
         fontSize: 14,
         showPrintMargin: false,
         enableBasicAutocompletion: true,
-        enableLiveAutocompletion: false
+        enableLiveAutocompletion: false,
+        wrap: true,
+        scrollPastEnd: 0.5
     });
+    
+    // Enable touch scrolling for mobile
+    editor.setOption('enableMobileMenu', true);
     
     editor.setValue('public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}', -1);
     
@@ -73,6 +78,18 @@ function initializeUI() {
         document.getElementById('fileModal').classList.add('active');
     });
 
+    const practiceBtn = document.getElementById('practiceBtn');
+    if (practiceBtn) {
+        practiceBtn.addEventListener('click', () => {
+            document.getElementById('practiceModal').classList.add('active');
+            loadPracticePrograms();
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('overlay').classList.remove('active');
+            }
+        });
+    }
+
     document.getElementById('createProject').addEventListener('click', () => {
         const name = document.getElementById('projectName').value;
         const project = fileManager.createProject(name);
@@ -123,10 +140,11 @@ function initializeUI() {
     }
 
     document.getElementById('closeOutput').addEventListener('click', () => {
-        const outputPanel = document.getElementById('outputPanel');
-        outputPanel.classList.remove('active');
-        outputPanel.classList.remove('resizable');
-        outputPanel.style.height = '0';
+        document.getElementById('consoleModal').classList.remove('active');
+    });
+
+    document.getElementById('closeConsoleModal').addEventListener('click', () => {
+        document.getElementById('consoleModal').classList.remove('active');
     });
 
     document.getElementById('clearConsole').addEventListener('click', () => {
@@ -148,16 +166,106 @@ function initializeUI() {
         }
     });
 
+    // Modal console input handler
+    const modalInput = document.getElementById('modalConsoleInput');
+    if (modalInput) {
+        modalInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submitModalInput();
+            }
+        });
+    }
+
     document.getElementById('fontSize').addEventListener('change', (e) => {
         const size = parseInt(e.target.value);
         editor.setFontSize(size);
         localStorage.setItem('editorFontSize', size);
     });
 
+    document.getElementById('fontFamily').addEventListener('change', (e) => {
+        const family = e.target.value;
+        editor.setOption('fontFamily', family);
+        localStorage.setItem('editorFontFamily', family);
+    });
+
+    document.getElementById('tabSize').addEventListener('change', (e) => {
+        const size = parseInt(e.target.value);
+        editor.session.setTabSize(size);
+        localStorage.setItem('editorTabSize', size);
+    });
+
+    document.getElementById('lineHeight').addEventListener('change', (e) => {
+        const height = parseFloat(e.target.value);
+        document.getElementById('editor').style.lineHeight = height;
+        localStorage.setItem('editorLineHeight', height);
+    });
+
+    document.getElementById('wordWrap').addEventListener('change', (e) => {
+        const wrap = e.target.checked;
+        editor.session.setUseWrapMode(wrap);
+        localStorage.setItem('editorWordWrap', wrap);
+    });
+
+    document.getElementById('showLineNumbers').addEventListener('change', (e) => {
+        const show = e.target.checked;
+        editor.setOption('showLineNumbers', show);
+        localStorage.setItem('editorShowLineNumbers', show);
+    });
+
+    document.getElementById('autoComplete').addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        editor.setOption('enableBasicAutocompletion', enabled);
+        editor.setOption('enableLiveAutocompletion', enabled);
+        localStorage.setItem('editorAutoComplete', enabled);
+    });
+
+    document.getElementById('highlightActiveLine').addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        editor.setOption('highlightActiveLine', enabled);
+        localStorage.setItem('editorHighlightActiveLine', enabled);
+    });
+
+    document.getElementById('showIndentGuides').addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        editor.setOption('displayIndentGuides', enabled);
+        localStorage.setItem('editorShowIndentGuides', enabled);
+    });
+
+    document.getElementById('cursorStyle').addEventListener('change', (e) => {
+        const style = e.target.value;
+        editor.setOption('cursorStyle', style);
+        localStorage.setItem('editorCursorStyle', style);
+    });
+
+    document.getElementById('scrollSpeed').addEventListener('input', (e) => {
+        const speed = parseInt(e.target.value);
+        document.getElementById('scrollSpeedValue').textContent = speed;
+        editor.setOption('scrollSpeed', speed);
+        localStorage.setItem('editorScrollSpeed', speed);
+    });
+
+    document.getElementById('enableSnippets').addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        editor.setOption('enableSnippets', enabled);
+        localStorage.setItem('editorEnableSnippets', enabled);
+    });
+
+    document.getElementById('bracketMatching').addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        editor.setOption('behavioursEnabled', enabled);
+        localStorage.setItem('editorBracketMatching', enabled);
+    });
+
     document.getElementById('themeSelect').addEventListener('change', (e) => {
         const theme = e.target.value;
-        if (theme === 'vs-light') editor.setTheme('ace/theme/chrome');
-        else editor.setTheme('ace/theme/monokai');
+        if (theme === 'vs-light') {
+            editor.setTheme('ace/theme/chrome');
+        } else if (theme === 'hc-black') {
+            editor.setTheme('ace/theme/terminal');
+        } else {
+            editor.setTheme('ace/theme/monokai');
+        }
         localStorage.setItem('editorTheme', theme);
     });
 
@@ -207,12 +315,13 @@ function handleBottomNavAction(action) {
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
             break;
+        case 'practice':
+            document.getElementById('practiceModal').classList.add('active');
+            loadPracticePrograms();
+            break;
         case 'files':
             sidebar.classList.add('active');
             overlay.classList.add('active');
-            break;
-        case 'run':
-            runCode();
             break;
         case 'settings':
             document.getElementById('settingsModal').classList.add('active');
@@ -518,15 +627,16 @@ let executionState = {
 
 function runCode() {
     const code = editor.getValue();
-    const outputPanel = document.getElementById('outputPanel');
-    const outputContent = document.getElementById('outputContent');
-    const consoleInputArea = document.getElementById('consoleInputArea');
+    const consoleModal = document.getElementById('consoleModal');
+    const modalOutputContent = document.getElementById('modalOutputContent');
+    const modalInputArea = document.getElementById('modalInputArea');
     const theme = localStorage.getItem('editorTheme') || 'vs-dark';
     const successColor = theme === 'vs-light' ? '#2e7d32' : '#4caf50';
     const warningColor = theme === 'vs-light' ? '#f57c00' : '#ff9800';
     const errorColor = theme === 'vs-light' ? '#c62828' : '#f44336';
     
-    // Validate filename and class name match
+    consoleModal.classList.add('active');
+    
     const classMatch = code.match(/public\s+class\s+(\w+)/);
     if (classMatch) {
         const className = classMatch[1];
@@ -534,11 +644,9 @@ function runCode() {
         const expectedFileName = className + '.java';
         
         if (currentFileName !== expectedFileName) {
-            outputPanel.style.display = 'flex';
-            outputPanel.classList.add('active');
-            outputContent.innerHTML = `<span style="color: ${errorColor};">❌ Error: Class name "${className}" does not match filename "${currentFileName}"</span>\n`;
-            outputContent.innerHTML += `<span style="color: ${warningColor};">Filename must be "${expectedFileName}" (case-sensitive)</span>\n\n`;
-            outputContent.innerHTML += `<span style="color: ${successColor};">💡 Tip: Rename the file or change the class name to match.</span>`;
+            modalOutputContent.innerHTML = `<span style="color: ${errorColor};">❌ Error: Class name "${className}" does not match filename "${currentFileName}"</span>\n`;
+            modalOutputContent.innerHTML += `<span style="color: ${warningColor};">Filename must be "${expectedFileName}" (case-sensitive)</span>\n\n`;
+            modalOutputContent.innerHTML += `<span style="color: ${successColor};">💡 Tip: Rename the file or change the class name to match.</span>`;
             return;
         }
     }
@@ -551,14 +659,11 @@ function runCode() {
         prompts: []
     };
     
-    outputPanel.style.display = 'flex';
-    outputPanel.classList.add('active');
-    outputContent.innerHTML = `<span style="color: ${successColor};">⏳ Starting execution...</span>\n\n`;
-    consoleInputArea.style.display = 'none';
+    modalOutputContent.innerHTML = `<span style="color: ${successColor};">⏳ Starting execution...</span>\n\n`;
+    modalInputArea.style.display = 'none';
 
     setTimeout(() => {
         if (code.includes('Scanner') || code.includes('BufferedReader')) {
-            outputContent.innerHTML += `<span style="color: ${warningColor};">📝 This program requires input.</span>\n\n`;
             handleInteractiveExecution(code);
         } else {
             executeWithAPI(code, []);
@@ -567,7 +672,7 @@ function runCode() {
 }
 
 function handleInteractiveExecution(code) {
-    const outputContent = document.getElementById('outputContent');
+    const outputContent = document.getElementById('modalOutputContent');
     
     // Count ALL .next methods including next(), nextLine(), nextInt(), etc.
     const inputCount = (code.match(/\.next\w*\s*\(/g) || []).length;
@@ -597,10 +702,10 @@ function handleInteractiveExecution(code) {
 }
 
 function promptForInput() {
-    const consoleInputArea = document.getElementById('consoleInputArea');
-    const inputField = document.getElementById('consoleInput');
+    const inputArea = document.getElementById('modalInputArea');
+    const inputField = document.getElementById('modalConsoleInput');
     executionState.waitingForInput = true;
-    consoleInputArea.style.display = 'flex';
+    inputArea.style.display = 'flex';
     const code = editor.getValue();
     const inputCount = (code.match(/\.next\w*\s*\(/g) || []).length;
     console.log('DEBUG: promptForInput - inputIndex:', executionState.inputIndex, 'of', inputCount);
@@ -611,13 +716,10 @@ function promptForInput() {
     inputField.focus();
 }
 
-function submitConsoleInput() {
-    const inputField = document.getElementById('consoleInput');
+function submitModalInput() {
+    const inputField = document.getElementById('modalConsoleInput');
     const value = inputField.value;
-    const outputContent = document.getElementById('outputContent');
-    const outputPanel = document.getElementById('outputPanel');
-    
-    // Allow empty inputs for nextLine() cleanup
+    const outputContent = document.getElementById('modalOutputContent');
     
     const currentPrompt = executionState.prompts[executionState.inputIndex] || `Input ${executionState.inputIndex + 1}`;
     outputContent.innerHTML += `<span style="color: #00bcd4;">${currentPrompt}</span> <span style="color: #4caf50;">${value}</span>\n`;
@@ -634,21 +736,19 @@ function submitConsoleInput() {
     if (executionState.inputIndex < inputCount) {
         promptForInput();
     } else {
-        document.getElementById('consoleInputArea').style.display = 'none';
+        document.getElementById('modalInputArea').style.display = 'none';
         executionState.waitingForInput = false;
         outputContent.innerHTML += '\n<span style="color: #2196f3;">--- Execution Output ---</span>\n';
-        
-        outputPanel.classList.add('active');
-        outputPanel.style.display = 'flex';
-        
         executeWithAPI(code, executionState.inputs);
     }
-    
-    return false;
+}
+
+function submitConsoleInput() {
+    // Old function - kept for compatibility
 }
 
 function executeWithAPI(code, inputs) {
-    const outputContent = document.getElementById('outputContent');
+    const outputContent = document.getElementById('modalOutputContent');
     const runBtn = document.getElementById('runCode');
     const theme = localStorage.getItem('editorTheme') || 'vs-dark';
     const textColor = theme === 'vs-light' ? '#000000' : '#e0e0e0';
@@ -656,6 +756,15 @@ function executeWithAPI(code, inputs) {
     const errorColor = theme === 'vs-light' ? '#c62828' : '#f44336';
     const warningColor = theme === 'vs-light' ? '#f57c00' : '#ff9800';
     const infoColor = theme === 'vs-light' ? '#0277bd' : '#2196f3';
+    
+    if (!navigator.onLine) {
+        outputContent.innerHTML += `<span style="color: ${errorColor};">❌ No internet connection!</span>\n`;
+        outputContent.innerHTML += `<span style="color: ${warningColor};">⚠️ You need internet to run Java programs.</span>\n`;
+        outputContent.innerHTML += `<span style="color: ${infoColor};">💡 Editor works offline, but execution requires server connection.</span>`;
+        if (runBtn) runBtn.disabled = false;
+        executionState.isExecuting = false;
+        return;
+    }
     
     outputContent.innerHTML += `<span style="color: ${warningColor};">⚙️ Compiling and executing...</span>\n\n`;
     
@@ -712,16 +821,60 @@ function escapeHtml(text) {
 
 function loadSettings() {
     const fontSize = localStorage.getItem('editorFontSize') || 14;
+    const fontFamily = localStorage.getItem('editorFontFamily') || 'Consolas';
+    const tabSize = localStorage.getItem('editorTabSize') || 4;
+    const lineHeight = localStorage.getItem('editorLineHeight') || 1.6;
+    const wordWrap = localStorage.getItem('editorWordWrap') === 'true';
+    const showLineNumbers = localStorage.getItem('editorShowLineNumbers') !== 'false';
+    const autoComplete = localStorage.getItem('editorAutoComplete') !== 'false';
+    const highlightActiveLine = localStorage.getItem('editorHighlightActiveLine') !== 'false';
+    const showIndentGuides = localStorage.getItem('editorShowIndentGuides') !== 'false';
+    const cursorStyle = localStorage.getItem('editorCursorStyle') || 'ace';
+    const scrollSpeed = localStorage.getItem('editorScrollSpeed') || 3;
+    const enableSnippets = localStorage.getItem('editorEnableSnippets') !== 'false';
+    const bracketMatching = localStorage.getItem('editorBracketMatching') !== 'false';
     const autoSave = localStorage.getItem('autoSaveEnabled') !== 'false';
     const theme = localStorage.getItem('editorTheme') || 'vs-dark';
 
     document.getElementById('fontSize').value = fontSize;
+    document.getElementById('fontFamily').value = fontFamily;
+    document.getElementById('tabSize').value = tabSize;
+    document.getElementById('lineHeight').value = lineHeight;
+    document.getElementById('wordWrap').checked = wordWrap;
+    document.getElementById('showLineNumbers').checked = showLineNumbers;
+    document.getElementById('autoComplete').checked = autoComplete;
+    document.getElementById('highlightActiveLine').checked = highlightActiveLine;
+    document.getElementById('showIndentGuides').checked = showIndentGuides;
+    document.getElementById('cursorStyle').value = cursorStyle;
+    document.getElementById('scrollSpeed').value = scrollSpeed;
+    document.getElementById('scrollSpeedValue').textContent = scrollSpeed;
+    document.getElementById('enableSnippets').checked = enableSnippets;
+    document.getElementById('bracketMatching').checked = bracketMatching;
     document.getElementById('autoSave').checked = autoSave;
     document.getElementById('themeSelect').value = theme;
 
     editor.setFontSize(parseInt(fontSize));
-    if (theme === 'vs-light') editor.setTheme('ace/theme/chrome');
-    else editor.setTheme('ace/theme/monokai');
+    editor.setOption('fontFamily', fontFamily);
+    editor.session.setTabSize(parseInt(tabSize));
+    document.getElementById('editor').style.lineHeight = lineHeight;
+    editor.session.setUseWrapMode(wordWrap);
+    editor.setOption('showLineNumbers', showLineNumbers);
+    editor.setOption('enableBasicAutocompletion', autoComplete);
+    editor.setOption('enableLiveAutocompletion', autoComplete);
+    editor.setOption('highlightActiveLine', highlightActiveLine);
+    editor.setOption('displayIndentGuides', showIndentGuides);
+    editor.setOption('cursorStyle', cursorStyle);
+    editor.setOption('scrollSpeed', parseInt(scrollSpeed));
+    editor.setOption('enableSnippets', enableSnippets);
+    editor.setOption('behavioursEnabled', bracketMatching);
+    
+    if (theme === 'vs-light') {
+        editor.setTheme('ace/theme/chrome');
+    } else if (theme === 'hc-black') {
+        editor.setTheme('ace/theme/terminal');
+    } else {
+        editor.setTheme('ace/theme/monokai');
+    }
 
     if (autoSave) startAutoSave();
 }
@@ -755,6 +908,111 @@ window.addEventListener('beforeunload', (e) => {
     if (isEditorDirty) {
         e.preventDefault();
         e.returnValue = '';
+    }
+});
+
+// Practice Programs Functionality
+let practiceData = { categories: [] };
+let currentProgram = null;
+
+async function loadPracticePrograms() {
+    if (practiceData.categories.length > 0) {
+        renderCategories();
+        return;
+    }
+    
+    try {
+        // Load config file
+        const configResponse = await fetch('./programs-config.json');
+        const config = await configResponse.json();
+        
+        // Load all program files
+        const allCategories = [];
+        for (const filePath of config.programFiles) {
+            try {
+                const response = await fetch('./' + filePath);
+                const data = await response.json();
+                if (data.categories) {
+                    allCategories.push(...data.categories);
+                }
+            } catch (error) {
+                console.error(`Error loading ${filePath}:`, error);
+            }
+        }
+        
+        practiceData.categories = allCategories;
+        renderCategories();
+    } catch (error) {
+        console.error('Error loading programs:', error);
+        document.getElementById('practiceCategories').innerHTML = '<p style="color: #f44336; padding: 20px;">Failed to load programs</p>';
+    }
+}
+
+function renderCategories() {
+    const container = document.getElementById('practiceCategories');
+    container.innerHTML = '';
+    
+    practiceData.categories.forEach(category => {
+        const card = document.createElement('div');
+        card.className = 'category-card';
+        card.style.setProperty('--gradient', category.gradient);
+        card.innerHTML = `
+            <i class="fas ${category.icon} category-icon" style="color: ${category.color};"></i>
+            <div class="category-name">${category.name}</div>
+            <div class="category-count">${category.programs.length} Programs</div>
+        `;
+        card.addEventListener('click', () => showPrograms(category));
+        container.appendChild(card);
+    });
+}
+
+function showPrograms(category) {
+    document.getElementById('practiceModal').classList.remove('active');
+    document.getElementById('programsModal').classList.add('active');
+    document.getElementById('programsModalTitle').innerHTML = `<i class="fas ${category.icon}"></i> ${category.name}`;
+    
+    const container = document.getElementById('programsList');
+    container.innerHTML = '';
+    
+    category.programs.forEach(program => {
+        const card = document.createElement('div');
+        card.className = 'program-card';
+        card.innerHTML = `
+            <div class="program-card-title">${program.program_name}</div>
+            <div class="program-card-desc">${program.description}</div>
+        `;
+        card.addEventListener('click', () => showProgramDetail(program));
+        container.appendChild(card);
+    });
+}
+
+function showProgramDetail(program) {
+    currentProgram = program;
+    document.getElementById('programsModal').classList.remove('active');
+    document.getElementById('programDetailModal').classList.add('active');
+    
+    document.getElementById('programDetailTitle').textContent = program.program_name;
+    document.getElementById('programDescription').textContent = program.description;
+    document.getElementById('programInstruction').textContent = program.instruction;
+    document.getElementById('programCode').textContent = program.code;
+    document.getElementById('programOutput').textContent = program.output;
+}
+
+document.getElementById('loadProgramBtn').addEventListener('click', () => {
+    if (currentProgram) {
+        editor.setValue(currentProgram.code, -1);
+        document.getElementById('programDetailModal').classList.remove('active');
+        
+        // Extract class name and update file name
+        const classMatch = currentProgram.code.match(/public\s+class\s+(\w+)/);
+        if (classMatch) {
+            const className = classMatch[1];
+            document.getElementById('currentFileName').textContent = className + '.java';
+            document.getElementById('currentFileNameMobile').textContent = className + '.java';
+        }
+        
+        isEditorDirty = true;
+        updateSaveIndicator(false);
     }
 });
 

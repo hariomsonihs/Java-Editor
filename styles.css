@@ -348,10 +348,11 @@ body {
 
 .editor-container {
     flex: 1;
-    overflow: auto;
+    overflow: hidden;
     position: relative;
     min-height: 0;
     width: 100%;
+    touch-action: pan-y;
 }
 
 #editor {
@@ -362,6 +363,7 @@ body {
     bottom: 0;
     width: 100% !important;
     height: 100% !important;
+    touch-action: pan-y;
 }
 
 .output-panel {
@@ -824,4 +826,333 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+.console-modal .console-modal-content {
+    background: var(--bg-dark);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    height: 80vh;
+    max-height: 600px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease;
+}
+
+.console-modal-header {
+    padding: 12px 16px;
+    background: var(--bg-dark);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.console-modal-header h3 {
+    font-size: 16px;
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.console-modal-header div {
+    display: flex;
+    gap: 4px;
+}
+
+.console-modal-body {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    background: var(--bg-darker);
+}
+
+/* Light mode console */
+body:has(#editor.ace_editor.ace-chrome) .console-modal-body {
+    background: #f5f5f5;
+    color: #000000;
+}
+
+body:has(#editor.ace_editor.ace-chrome) .console-modal-header,
+body:has(#editor.ace_editor.ace-chrome) .console-modal-input {
+    background: #ffffff;
+    border-color: #e0e0e0;
+}
+
+body:has(#editor.ace_editor.ace-chrome) .console-modal-content {
+    border-color: #e0e0e0;
+}
+
+body:has(#editor.ace_editor.ace-chrome) .console-modal-header h3 {
+    color: #000000;
+}
+
+body:has(#editor.ace_editor.ace-chrome) .console-modal-input input {
+    background: #ffffff;
+    border-color: #e0e0e0;
+    color: #000000;
+}
+
+.console-modal-input {
+    padding: 12px 16px;
+    background: var(--bg-dark);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 8px;
+}
+
+.console-modal-input input {
+    flex: 1;
+    background: var(--bg-darker);
+    border: 1px solid var(--border-color);
+    color: var(--text-white);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.console-modal-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.console-modal-input button {
+    background: var(--primary-color);
+    color: var(--text-white);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.console-modal-input button:hover {
+    background: #005a9e;
+}
+
+@media (max-width: 768px) {
+    .console-modal .console-modal-content {
+        width: 95%;
+        height: 85vh;
+        max-height: none;
+    }
+    
+    .console-modal-header {
+        padding: 10px 12px;
+    }
+    
+    .console-modal-header h3 {
+        font-size: 14px;
+    }
+    
+    .console-modal-body {
+        padding: 12px;
+        font-size: 12px;
+    }
+    
+    .console-modal-input {
+        padding: 10px 12px;
+    }
+}
+
+/* Practice Modals */
+.practice-modal .practice-modal-content,
+.programs-modal .programs-modal-content,
+.program-detail-modal .program-detail-content {
+    background: var(--bg-dark);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease;
+    overflow: hidden;
+}
+
+.practice-modal-header,
+.programs-modal-header,
+.program-detail-header {
+    padding: 16px 20px;
+    background: var(--bg-dark);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.practice-modal-header h3,
+.programs-modal-header h3,
+.program-detail-header h3 {
+    flex: 1;
+    font-size: 18px;
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.practice-categories {
+    padding: 24px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.category-card {
+    background: var(--bg-darker);
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover::before {
+    transform: scaleX(1);
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border-color: var(--primary-color);
+}
+
+.category-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.category-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-bottom: 8px;
+}
+
+.category-count {
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.programs-list {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.program-card {
+    background: var(--bg-darker);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 4px solid var(--primary-color);
+}
+
+.program-card:hover {
+    background: var(--bg-dark);
+    transform: translateX(5px);
+}
+
+.program-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-bottom: 6px;
+}
+
+.program-card-desc {
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.program-detail-body {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.program-info {
+    margin-bottom: 20px;
+}
+
+.program-info p {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 12px;
+}
+
+.program-info pre,
+.program-code pre,
+.program-output pre {
+    background: var(--bg-darker);
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-white);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.program-code,
+.program-output {
+    margin-bottom: 16px;
+}
+
+.program-code h4,
+.program-output h4 {
+    font-size: 14px;
+    color: var(--text-white);
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    .practice-categories {
+        grid-template-columns: 1fr;
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .category-card {
+        padding: 20px;
+    }
+    
+    .programs-list {
+        padding: 16px;
+    }
+    
+    .program-detail-body {
+        padding: 16px;
+    }
 }
