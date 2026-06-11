@@ -1,150 +1,670 @@
 {
-
-  "id": "basics",
-  "name": "Java Basics",
-  "icon": "fa-book",
-  "color": "#4CAF50",
-  "gradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-  "programs": [
+  "categories": [
     {
-      "program_name": "Hello World",
-      "description": "Basic Hello World program",
-      "instruction": "Compile: javac HelloWorld.java\nRun: java HelloWorld",
-      "code": "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, Java!\");\n    }\n}",
-      "output": "Hello, Java!"
+      "id": "basics",
+      "name": "Java Basics",
+      "icon": "fa-book",
+      "color": "#4CAF50",
+      "gradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "programs": [
+        {
+          "program_name": "Hello World",
+          "description": "Basic Hello World program in Java",
+          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., HelloWorld.java).\nCompile: javac HelloWorld.java\nRun: java HelloWorld",
+          "code": "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, Java!\");\n    }\n}",
+          "output": "Hello, Java!"
+        },
+        {
+          "program_name": "Add Two Numbers",
+          "description": "Program to add two integers in Java",
+          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., AddTwo.java).\nCompile: javac AddTwo.java\nRun: java AddTwo",
+          "code": "public class AddTwo {\n    public static void main(String[] args) {\n        int a = 10, b = 20;\n        System.out.println(\"Sum: \" + (a + b));\n    }\n}",
+          "output": "Sum: 30"
+        },
+        {
+          "program_name": "Even or Odd",
+          "description": "Check if a number is even or odd",
+          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., EvenOdd.java).\nCompile: javac EvenOdd.java\nRun: java EvenOdd",
+          "code": "public class EvenOdd {\n    public static void main(String[] args) {\n        int num = 15;\n        if (num % 2 == 0)\n            System.out.println(num + \" is Even\");\n        else\n            System.out.println(num + \" is Odd\");\n    }\n}",
+          "output": "15 is Odd"
+        }
+      ]
     },
     {
-      "program_name": "Print Multiple Lines",
-      "description": "Print multiple lines on screen",
-      "instruction": "Compile and run normally.",
-      "code": "public class MultipleLines {\n    public static void main(String[] args) {\n        System.out.println(\"Java\");\n        System.out.println(\"Programming\");\n        System.out.println(\"Language\");\n    }\n}",
-      "output": "Java\nProgramming\nLanguage"
+      "id": "loops",
+      "name": "Loops & Patterns",
+      "icon": "fa-repeat",
+      "color": "#FF9800",
+      "gradient": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+      "programs": [
+        {
+          "program_name": "Print 1 to 10",
+          "description": "Print numbers from 1 to 10 using for loop",
+          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., PrintNumbers.java).\nCompile: javac PrintNumbers.java\nRun: java PrintNumbers",
+          "code": "public class PrintNumbers {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 10; i++) {\n            System.out.println(i);\n        }\n    }\n}",
+          "output": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10"
+        },
+        {
+          "program_name": "Star Pattern",
+          "description": "Print a right triangle star pattern",
+          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., StarPattern.java).\nCompile: javac StarPattern.java\nRun: java StarPattern",
+          "code": "public class StarPattern {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 5; i++) {\n            for (int j = 1; j <= i; j++) {\n                System.out.print(\"* \");\n            }\n            System.out.println();\n        }\n    }\n}",
+          "output": "* \n* * \n* * * \n* * * * \n* * * * * "
+        }
+      ]
     },
     {
-      "program_name": "Addition of Two Numbers",
-      "description": "Add two integers",
-      "instruction": "Compile and run normally.",
-      "code": "public class Addition {\n    public static void main(String[] args) {\n        int a = 10;\n        int b = 20;\n        int sum = a + b;\n        System.out.println(\"Sum = \" + sum);\n    }\n}",
-      "output": "Sum = 30"
+      "id": "arrays",
+      "name": "Arrays",
+      "icon": "fa-table-cells",
+      "color": "#2196F3",
+      "gradient": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      "programs": [
+        {
+          "program_name": "Array Sum",
+          "description": "Calculate sum of array elements",
+          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., ArraySum.java).\nCompile: javac ArraySum.java\nRun: java ArraySum",
+          "code": "public class ArraySum {\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3, 4, 5};\n        int sum = 0;\n        for (int num : arr) {\n            sum += num;\n        }\n        System.out.println(\"Sum: \" + sum);\n    }\n}",
+          "output": "Sum: 15"
+        },
+        {
+          "program_name": "Find Maximum",
+          "description": "Find maximum element in an array",
+          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., FindMax.java).\nCompile: javac FindMax.java\nRun: java FindMax",
+          "code": "public class FindMax {\n    public static void main(String[] args) {\n        int[] arr = {12, 45, 23, 67, 34};\n        int max = arr[0];\n        for (int num : arr) {\n            if (num > max) max = num;\n        }\n        System.out.println(\"Maximum: \" + max);\n    }\n}",
+          "output": "Maximum: 67"
+        }
+      ]
     },
     {
-      "program_name": "Subtraction",
-      "description": "Subtract two numbers",
-      "instruction": "Compile and run normally.",
-      "code": "public class Subtraction {\n    public static void main(String[] args) {\n        int a = 20;\n        int b = 5;\n        System.out.println(\"Difference = \" + (a - b));\n    }\n}",
-      "output": "Difference = 15"
-    },
-    {
-      "program_name": "Multiplication",
-      "description": "Multiply two numbers",
-      "instruction": "Compile and run normally.",
-      "code": "public class Multiplication {\n    public static void main(String[] args) {\n        int a = 5;\n        int b = 4;\n        System.out.println(\"Product = \" + (a * b));\n    }\n}",
-      "output": "Product = 20"
-    },
-    {
-      "program_name": "Division",
-      "description": "Divide two numbers",
-      "instruction": "Compile and run normally.",
-      "code": "public class Division {\n    public static void main(String[] args) {\n        int a = 20;\n        int b = 4;\n        System.out.println(\"Result = \" + (a / b));\n    }\n}",
-      "output": "Result = 5"
-    },
-    {
-      "program_name": "Find Remainder",
-      "description": "Use modulus operator",
-      "instruction": "Compile and run normally.",
-      "code": "public class Remainder {\n    public static void main(String[] args) {\n        int a = 17;\n        int b = 5;\n        System.out.println(\"Remainder = \" + (a % b));\n    }\n}",
-      "output": "Remainder = 2"
-    },
-    {
-      "program_name": "Swap Two Numbers",
-      "description": "Swap using third variable",
-      "instruction": "Compile and run normally.",
-      "code": "public class SwapNumbers {\n    public static void main(String[] args) {\n        int a = 10;\n        int b = 20;\n        int temp = a;\n        a = b;\n        b = temp;\n        System.out.println(\"a = \" + a);\n        System.out.println(\"b = \" + b);\n    }\n}",
-      "output": "a = 20\nb = 10"
-    },
-    {
-      "program_name": "Area of Rectangle",
-      "description": "Calculate area of rectangle",
-      "instruction": "Compile and run normally.",
-      "code": "public class RectangleArea {\n    public static void main(String[] args) {\n        int length = 10;\n        int width = 5;\n        System.out.println(\"Area = \" + (length * width));\n    }\n}",
-      "output": "Area = 50"
-    },
-    {
-      "program_name": "Area of Circle",
-      "description": "Calculate circle area",
-      "instruction": "Compile and run normally.",
-      "code": "public class CircleArea {\n    public static void main(String[] args) {\n        double radius = 7;\n        double area = 3.14159 * radius * radius;\n        System.out.println(\"Area = \" + area);\n    }\n}",
-      "output": "Area = 153.93791"
-    },
-    {
-      "program_name": "Check Even or Odd",
-      "description": "Determine if a number is even or odd",
-      "instruction": "Compile and run normally.",
-      "code": "public class EvenOdd {\n    public static void main(String[] args) {\n        int num = 8;\n        if(num % 2 == 0)\n            System.out.println(\"Even\");\n        else\n            System.out.println(\"Odd\");\n    }\n}",
-      "output": "Even"
-    },
-    {
-      "program_name": "Find Largest Number",
-      "description": "Find larger of two numbers",
-      "instruction": "Compile and run normally.",
-      "code": "public class LargestNumber {\n    public static void main(String[] args) {\n        int a = 50;\n        int b = 70;\n        if(a > b)\n            System.out.println(a);\n        else\n            System.out.println(b);\n    }\n}",
-      "output": "70"
-    },
-    {
-      "program_name": "Check Positive Negative",
-      "description": "Check sign of number",
-      "instruction": "Compile and run normally.",
-      "code": "public class PositiveNegative {\n    public static void main(String[] args) {\n        int num = -5;\n        if(num > 0)\n            System.out.println(\"Positive\");\n        else if(num < 0)\n            System.out.println(\"Negative\");\n        else\n            System.out.println(\"Zero\");\n    }\n}",
-      "output": "Negative"
-    },
-    {
-      "program_name": "Print Numbers 1 to 10",
-      "description": "Using for loop",
-      "instruction": "Compile and run normally.",
-      "code": "public class PrintNumbers {\n    public static void main(String[] args) {\n        for(int i=1;i<=10;i++) {\n            System.out.println(i);\n        }\n    }\n}",
-      "output": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10"
-    },
-    {
-      "program_name": "Sum of First 10 Numbers",
-      "description": "Calculate sum using loop",
-      "instruction": "Compile and run normally.",
-      "code": "public class SumNumbers {\n    public static void main(String[] args) {\n        int sum = 0;\n        for(int i=1;i<=10;i++) {\n            sum += i;\n        }\n        System.out.println(sum);\n    }\n}",
-      "output": "55"
-    },
-    {
-      "program_name": "Print Multiplication Table",
-      "description": "Print table of 5",
-      "instruction": "Compile and run normally.",
-      "code": "public class MultiplicationTable {\n    public static void main(String[] args) {\n        for(int i=1;i<=10;i++) {\n            System.out.println(\"5 x \" + i + \" = \" + (5*i));\n        }\n    }\n}",
-      "output": "5 x 1 = 5\n...\n5 x 10 = 50"
-    },
-    {
-      "program_name": "Factorial Number",
-      "description": "Find factorial using loop",
-      "instruction": "Compile and run normally.",
-      "code": "public class Factorial {\n    public static void main(String[] args) {\n        int num = 5;\n        int fact = 1;\n        for(int i=1;i<=num;i++) {\n            fact *= i;\n        }\n        System.out.println(fact);\n    }\n}",
-      "output": "120"
-    },
-    {
-      "program_name": "Reverse Number",
-      "description": "Reverse digits of number",
-      "instruction": "Compile and run normally.",
-      "code": "public class ReverseNumber {\n    public static void main(String[] args) {\n        int num = 1234;\n        int rev = 0;\n        while(num > 0) {\n            rev = rev * 10 + num % 10;\n            num /= 10;\n        }\n        System.out.println(rev);\n    }\n}",
-      "output": "4321"
-    },
-    {
-      "program_name": "Find First Digit",
-      "description": "Get first digit of number",
-      "instruction": "Compile and run normally.",
-      "code": "public class FirstDigit {\n    public static void main(String[] args) {\n        int num = 9876;\n        while(num >= 10) {\n            num /= 10;\n        }\n        System.out.println(num);\n    }\n}",
-      "output": "9"
-    },
-    {
-      "program_name": "Find Last Digit",
-      "description": "Get last digit of number",
-      "instruction": "Compile and run normally.",
-      "code": "public class LastDigit {\n    public static void main(String[] args) {\n        int num = 9876;\n        System.out.println(num % 10);\n    }\n}",
-      "output": "6"
+      "id": "strings",
+      "name": "Strings",
+      "icon": "fa-font",
+      "color": "#E91E63",
+      "gradient": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+      "programs": [
+        {
+          "program_name": "Reverse String",
+          "description": "Reverse a given string",
+          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., ReverseString.java).\nCompile: javac ReverseString.java\nRun: java ReverseString",
+          "code": "public class ReverseString {\n    public static void main(String[] args) {\n        String str = \"Hello\";\n        String reversed = \"\";\n        for (int i = str.length() - 1; i >= 0; i--) {\n            reversed += str.charAt(i);\n        }\n        System.out.println(\"Reversed: \" + reversed);\n    }\n}",
+          "output": "Reversed: olleH"
+        },
+        {
+          "program_name": "Palindrome Check",
+          "description": "Check if a string is palindrome",
+          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., Palindrome.java).\nCompile: javac Palindrome.java\nRun: java Palindrome",
+          "code": "public class Palindrome {\n    public static void main(String[] args) {\n        String str = \"madam\";\n        String rev = \"\";\n        for (int i = str.length() - 1; i >= 0; i--) {\n            rev += str.charAt(i);\n        }\n        if (str.equals(rev))\n            System.out.println(str + \" is Palindrome\");\n        else\n            System.out.println(str + \" is not Palindrome\");\n    }\n}",
+          "output": "madam is Palindrome"
+        },
+        {
+          "program_name": "Print Your Name",
+          "description": "Prints a personalized greeting message using variables and string concatenation.",
+          "instruction": "Save file as: PrintName.java\nCompile: javac PrintName.java\nRun: java PrintName",
+          "example": "No input required.",
+          "input": "",
+          "code": "public class PrintName {\n    public static void main(String[] args) {\n        String name = \"Hariom\";\n        System.out.println(\"My name is: \" + name);\n    }\n}",
+          "output": "My name is: Hariom"
+        },
+        {
+          "program_name": "Add Two Numbers",
+          "description": "Adds two integers and prints the result. Demonstrates use of variables and arithmetic operators.",
+          "instruction": "Save file as: AddNumbers.java\nCompile: javac AddNumbers.java\nRun: java AddNumbers",
+          "example": "a = 10, b = 20 → Sum = 30",
+          "input": "",
+          "code": "public class AddNumbers {\n    public static void main(String[] args) {\n        int a = 10, b = 20;\n        int sum = a + b;\n        System.out.println(\"Sum = \" + sum);\n    }\n}",
+          "output": "Sum = 30"
+        },
+        {
+          "program_name": "Add Two Numbers (User Input)",
+          "description": "Takes two integers as input from user using Scanner and prints their sum.",
+          "instruction": "Save file as: AddInput.java\nCompile: javac AddInput.java\nRun: java AddInput\nEnter two numbers when prompted.",
+          "example": "Input: 15 25 → Output: Sum = 40",
+          "input": "15\n25",
+          "code": "import java.util.Scanner;\npublic class AddInput {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter first number: \");\n        int a = sc.nextInt();\n        System.out.print(\"Enter second number: \");\n        int b = sc.nextInt();\n        System.out.println(\"Sum = \" + (a + b));\n    }\n}",
+          "output": "Enter first number: 15\nEnter second number: 25\nSum = 40"
+        },
+        {
+          "program_name": "Subtract Two Numbers",
+          "description": "Subtracts second number from first and prints the difference.",
+          "instruction": "Save file as: Subtract.java\nCompile: javac Subtract.java\nRun: java Subtract",
+          "example": "a = 50, b = 20 → Difference = 30",
+          "input": "",
+          "code": "public class Subtract {\n    public static void main(String[] args) {\n        int a = 50, b = 20;\n        System.out.println(\"Difference = \" + (a - b));\n    }\n}",
+          "output": "Difference = 30"
+        },
+        {
+          "program_name": "Multiply Two Numbers",
+          "description": "Multiplies two numbers and prints the product.",
+          "instruction": "Save file as: Multiply.java\nCompile: javac Multiply.java\nRun: java Multiply",
+          "example": "a = 6, b = 7 → Product = 42",
+          "input": "",
+          "code": "public class Multiply {\n    public static void main(String[] args) {\n        int a = 6, b = 7;\n        System.out.println(\"Product = \" + (a * b));\n    }\n}",
+          "output": "Product = 42"
+        },
+        {
+          "program_name": "Divide Two Numbers",
+          "description": "Divides two numbers and prints both quotient and remainder.",
+          "instruction": "Save file as: Divide.java\nCompile: javac Divide.java\nRun: java Divide",
+          "example": "a = 17, b = 5 → Quotient = 3, Remainder = 2",
+          "input": "",
+          "code": "public class Divide {\n    public static void main(String[] args) {\n        int a = 17, b = 5;\n        System.out.println(\"Quotient = \" + (a / b));\n        System.out.println(\"Remainder = \" + (a % b));\n    }\n}",
+          "output": "Quotient = 3\nRemainder = 2"
+        },
+        {
+          "program_name": "Swap Two Numbers",
+          "description": "Swaps values of two variables using a temporary variable.",
+          "instruction": "Save file as: SwapNumbers.java\nCompile: javac SwapNumbers.java\nRun: java SwapNumbers",
+          "example": "Before: a=10, b=20 → After: a=20, b=10",
+          "input": "",
+          "code": "public class SwapNumbers {\n    public static void main(String[] args) {\n        int a = 10, b = 20;\n        System.out.println(\"Before: a=\" + a + \", b=\" + b);\n        int temp = a;\n        a = b;\n        b = temp;\n        System.out.println(\"After: a=\" + a + \", b=\" + b);\n    }\n}",
+          "output": "Before: a=10, b=20\nAfter: a=20, b=10"
+        },
+        {
+          "program_name": "Swap Without Temp Variable",
+          "description": "Swaps two numbers without using a third variable using arithmetic operations.",
+          "instruction": "Save file as: SwapNoTemp.java\nCompile: javac SwapNoTemp.java\nRun: java SwapNoTemp",
+          "example": "Before: a=5, b=9 → After: a=9, b=5",
+          "input": "",
+          "code": "public class SwapNoTemp {\n    public static void main(String[] args) {\n        int a = 5, b = 9;\n        System.out.println(\"Before: a=\" + a + \", b=\" + b);\n        a = a + b;\n        b = a - b;\n        a = a - b;\n        System.out.println(\"After: a=\" + a + \", b=\" + b);\n    }\n}",
+          "output": "Before: a=5, b=9\nAfter: a=9, b=5"
+        },
+        {
+          "program_name": "Check Even or Odd",
+          "description": "Checks whether a given number is even or odd using the modulus operator.",
+          "instruction": "Save file as: EvenOdd.java\nCompile: javac EvenOdd.java\nRun: java EvenOdd",
+          "example": "Input: 7 → Output: 7 is Odd\nInput: 12 → Output: 12 is Even",
+          "input": "7",
+          "code": "import java.util.Scanner;\npublic class EvenOdd {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt();\n        if (num % 2 == 0)\n            System.out.println(num + \" is Even\");\n        else\n            System.out.println(num + \" is Odd\");\n    }\n}",
+          "output": "Enter a number: 7\n7 is Odd"
+        },
+        {
+          "program_name": "Check Positive, Negative or Zero",
+          "description": "Determines whether a number is positive, negative, or zero using if-else-if ladder.",
+          "instruction": "Save file as: CheckSign.java\nCompile: javac CheckSign.java\nRun: java CheckSign",
+          "example": "Input: -5 → Negative\nInput: 0 → Zero\nInput: 8 → Positive",
+          "input": "-5",
+          "code": "import java.util.Scanner;\npublic class CheckSign {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt();\n        if (num > 0)\n            System.out.println(\"Positive\");\n        else if (num < 0)\n            System.out.println(\"Negative\");\n        else\n            System.out.println(\"Zero\");\n    }\n}",
+          "output": "Enter a number: -5\nNegative"
+        },
+        {
+          "program_name": "Find Largest of Two Numbers",
+          "description": "Compares two numbers and prints the larger one.",
+          "instruction": "Save file as: LargestTwo.java\nCompile: javac LargestTwo.java\nRun: java LargestTwo",
+          "example": "Input: 45 72 → Largest = 72",
+          "input": "45\n72",
+          "code": "import java.util.Scanner;\npublic class LargestTwo {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter first number: \");\n        int a = sc.nextInt();\n        System.out.print(\"Enter second number: \");\n        int b = sc.nextInt();\n        if (a > b)\n            System.out.println(\"Largest = \" + a);\n        else\n            System.out.println(\"Largest = \" + b);\n    }\n}",
+          "output": "Enter first number: 45\nEnter second number: 72\nLargest = 72"
+        },
+        {
+          "program_name": "Find Largest of Three Numbers",
+          "description": "Finds the largest among three numbers using nested if-else.",
+          "instruction": "Save file as: LargestThree.java\nCompile: javac LargestThree.java\nRun: java LargestThree",
+          "example": "Input: 10 35 22 → Largest = 35",
+          "input": "10\n35\n22",
+          "code": "import java.util.Scanner;\npublic class LargestThree {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter three numbers: \");\n        int a = sc.nextInt(), b = sc.nextInt(), c = sc.nextInt();\n        int max = a;\n        if (b > max) max = b;\n        if (c > max) max = c;\n        System.out.println(\"Largest = \" + max);\n    }\n}",
+          "output": "Enter three numbers: 10 35 22\nLargest = 35"
+        },
+        {
+          "program_name": "Simple Calculator",
+          "description": "Performs basic arithmetic operations (+, -, *, /) based on user's choice using switch statement.",
+          "instruction": "Save file as: Calculator.java\nCompile: javac Calculator.java\nRun: java Calculator\nEnter two numbers then operator (+, -, *, /).",
+          "example": "Input: 10 + 5 → Result = 15.0\nInput: 9 / 3 → Result = 3.0",
+          "input": "10\n5\n+",
+          "code": "import java.util.Scanner;\npublic class Calculator {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter first number: \");\n        double a = sc.nextDouble();\n        System.out.print(\"Enter second number: \");\n        double b = sc.nextDouble();\n        System.out.print(\"Enter operator (+, -, *, /): \");\n        char op = sc.next().charAt(0);\n        double result;\n        switch (op) {\n            case '+': result = a + b; break;\n            case '-': result = a - b; break;\n            case '*': result = a * b; break;\n            case '/': result = (b != 0) ? a / b : 0; break;\n            default: System.out.println(\"Invalid operator\"); return;\n        }\n        System.out.println(\"Result = \" + result);\n    }\n}",
+          "output": "Enter first number: 10\nEnter second number: 5\nEnter operator: +\nResult = 15.0"
+        },
+        {
+          "program_name": "Area of Rectangle",
+          "description": "Calculates the area of a rectangle using length and width.",
+          "instruction": "Save file as: RectangleArea.java\nCompile: javac RectangleArea.java\nRun: java RectangleArea",
+          "example": "Input: length=10, width=5 → Area = 50",
+          "input": "10\n5",
+          "code": "import java.util.Scanner;\npublic class RectangleArea {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter length: \");\n        double length = sc.nextDouble();\n        System.out.print(\"Enter width: \");\n        double width = sc.nextDouble();\n        System.out.println(\"Area = \" + (length * width));\n        System.out.println(\"Perimeter = \" + (2 * (length + width)));\n    }\n}",
+          "output": "Enter length: 10\nEnter width: 5\nArea = 50.0\nPerimeter = 30.0"
+        },
+        {
+          "program_name": "Area of Circle",
+          "description": "Calculates the area and circumference of a circle using radius.",
+          "instruction": "Save file as: CircleArea.java\nCompile: javac CircleArea.java\nRun: java CircleArea",
+          "example": "Input: radius=7 → Area = 153.94",
+          "input": "7",
+          "code": "import java.util.Scanner;\npublic class CircleArea {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter radius: \");\n        double r = sc.nextDouble();\n        System.out.printf(\"Area = %.2f%n\", Math.PI * r * r);\n        System.out.printf(\"Circumference = %.2f%n\", 2 * Math.PI * r);\n    }\n}",
+          "output": "Enter radius: 7\nArea = 153.94\nCircumference = 43.98"
+        },
+        {
+          "program_name": "Area of Triangle",
+          "description": "Calculates the area of a triangle using base and height formula: Area = 0.5 * base * height.",
+          "instruction": "Save file as: TriangleArea.java\nCompile: javac TriangleArea.java\nRun: java TriangleArea",
+          "example": "Input: base=6, height=8 → Area = 24.0",
+          "input": "6\n8",
+          "code": "import java.util.Scanner;\npublic class TriangleArea {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter base: \");\n        double base = sc.nextDouble();\n        System.out.print(\"Enter height: \");\n        double height = sc.nextDouble();\n        System.out.println(\"Area = \" + (0.5 * base * height));\n    }\n}",
+          "output": "Enter base: 6\nEnter height: 8\nArea = 24.0"
+        },
+        {
+          "program_name": "Temperature Converter",
+          "description": "Converts Celsius to Fahrenheit and vice versa. Formula: F = C * 9/5 + 32.",
+          "instruction": "Save file as: TempConverter.java\nCompile: javac TempConverter.java\nRun: java TempConverter",
+          "example": "Input: 100°C → 212.0°F\nInput: 32°F → 0.0°C",
+          "input": "100",
+          "code": "import java.util.Scanner;\npublic class TempConverter {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter temperature in Celsius: \");\n        double celsius = sc.nextDouble();\n        double fahrenheit = celsius * 9 / 5 + 32;\n        System.out.println(celsius + \"°C = \" + fahrenheit + \"°F\");\n    }\n}",
+          "output": "Enter temperature in Celsius: 100\n100.0°C = 212.0°F"
+        },
+        {
+          "program_name": "Simple Interest",
+          "description": "Calculates simple interest using formula: SI = (P * R * T) / 100.",
+          "instruction": "Save file as: SimpleInterest.java\nCompile: javac SimpleInterest.java\nRun: java SimpleInterest",
+          "example": "P=1000, R=5, T=2 → SI = 100.0",
+          "input": "1000\n5\n2",
+          "code": "import java.util.Scanner;\npublic class SimpleInterest {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter Principal: \");\n        double p = sc.nextDouble();\n        System.out.print(\"Enter Rate: \");\n        double r = sc.nextDouble();\n        System.out.print(\"Enter Time: \");\n        double t = sc.nextDouble();\n        double si = (p * r * t) / 100;\n        System.out.println(\"Simple Interest = \" + si);\n        System.out.println(\"Total Amount = \" + (p + si));\n    }\n}",
+          "output": "Enter Principal: 1000\nEnter Rate: 5\nEnter Time: 2\nSimple Interest = 100.0\nTotal Amount = 1100.0"
+        },
+        {
+          "program_name": "Compound Interest",
+          "description": "Calculates compound interest using formula: A = P * (1 + R/100)^T.",
+          "instruction": "Save file as: CompoundInterest.java\nCompile: javac CompoundInterest.java\nRun: java CompoundInterest",
+          "example": "P=1000, R=10, T=2 → CI = 210.0",
+          "input": "1000\n10\n2",
+          "code": "import java.util.Scanner;\npublic class CompoundInterest {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter Principal: \");\n        double p = sc.nextDouble();\n        System.out.print(\"Enter Rate: \");\n        double r = sc.nextDouble();\n        System.out.print(\"Enter Time: \");\n        double t = sc.nextDouble();\n        double amount = p * Math.pow(1 + r / 100, t);\n        double ci = amount - p;\n        System.out.printf(\"Compound Interest = %.2f%n\", ci);\n        System.out.printf(\"Total Amount = %.2f%n\", amount);\n    }\n}",
+          "output": "Enter Principal: 1000\nEnter Rate: 10\nEnter Time: 2\nCompound Interest = 210.00\nTotal Amount = 1210.00"
+        },
+        {
+          "program_name": "Factorial of a Number",
+          "description": "Calculates factorial of a number using a for loop. Factorial of n = n * (n-1) * ... * 1.",
+          "instruction": "Save file as: Factorial.java\nCompile: javac Factorial.java\nRun: java Factorial",
+          "example": "Input: 5 → 5! = 120\nInput: 0 → 0! = 1",
+          "input": "5",
+          "code": "import java.util.Scanner;\npublic class Factorial {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt();\n        long fact = 1;\n        for (int i = 1; i <= num; i++)\n            fact *= i;\n        System.out.println(num + \"! = \" + fact);\n    }\n}",
+          "output": "Enter a number: 5\n5! = 120"
+        },
+        {
+          "program_name": "Fibonacci Series",
+          "description": "Prints the Fibonacci series up to n terms. Each number is sum of previous two numbers.",
+          "instruction": "Save file as: Fibonacci.java\nCompile: javac Fibonacci.java\nRun: java Fibonacci",
+          "example": "Input: 8 → 0 1 1 2 3 5 8 13",
+          "input": "8",
+          "code": "import java.util.Scanner;\npublic class Fibonacci {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter number of terms: \");\n        int n = sc.nextInt();\n        int a = 0, b = 1;\n        System.out.print(\"Fibonacci: \");\n        for (int i = 0; i < n; i++) {\n            System.out.print(a + \" \");\n            int c = a + b;\n            a = b;\n            b = c;\n        }\n    }\n}",
+          "output": "Enter number of terms: 8\nFibonacci: 0 1 1 2 3 5 8 13"
+        },
+        {
+          "program_name": "Check Prime Number",
+          "description": "Checks whether a given number is prime. A prime number is only divisible by 1 and itself.",
+          "instruction": "Save file as: PrimeCheck.java\nCompile: javac PrimeCheck.java\nRun: java PrimeCheck",
+          "example": "Input: 17 → 17 is Prime\nInput: 15 → 15 is Not Prime",
+          "input": "17",
+          "code": "import java.util.Scanner;\npublic class PrimeCheck {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt();\n        boolean isPrime = num > 1;\n        for (int i = 2; i <= Math.sqrt(num); i++) {\n            if (num % i == 0) { isPrime = false; break; }\n        }\n        System.out.println(num + (isPrime ? \" is Prime\" : \" is Not Prime\"));\n    }\n}",
+          "output": "Enter a number: 17\n17 is Prime"
+        },
+        {
+          "program_name": "Print Prime Numbers",
+          "description": "Prints all prime numbers between 1 and N.",
+          "instruction": "Save file as: PrintPrimes.java\nCompile: javac PrintPrimes.java\nRun: java PrintPrimes",
+          "example": "Input: 20 → 2 3 5 7 11 13 17 19",
+          "input": "20",
+          "code": "import java.util.Scanner;\npublic class PrintPrimes {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter limit: \");\n        int n = sc.nextInt();\n        System.out.print(\"Primes: \");\n        for (int num = 2; num <= n; num++) {\n            boolean isPrime = true;\n            for (int i = 2; i <= Math.sqrt(num); i++)\n                if (num % i == 0) { isPrime = false; break; }\n            if (isPrime) System.out.print(num + \" \");\n        }\n    }\n}",
+          "output": "Enter limit: 20\nPrimes: 2 3 5 7 11 13 17 19"
+        },
+        {
+          "program_name": "Check Armstrong Number",
+          "description": "An Armstrong number equals the sum of its digits raised to the power of the number of digits. E.g. 153 = 1³ + 5³ + 3³.",
+          "instruction": "Save file as: ArmstrongCheck.java\nCompile: javac ArmstrongCheck.java\nRun: java ArmstrongCheck",
+          "example": "Input: 153 → Armstrong\nInput: 123 → Not Armstrong",
+          "input": "153",
+          "code": "import java.util.Scanner;\npublic class ArmstrongCheck {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt(), temp = num, sum = 0;\n        int digits = String.valueOf(num).length();\n        while (temp > 0) {\n            int d = temp % 10;\n            sum += (int) Math.pow(d, digits);\n            temp /= 10;\n        }\n        System.out.println(num + (sum == num ? \" is Armstrong\" : \" is Not Armstrong\"));\n    }\n}",
+          "output": "Enter a number: 153\n153 is Armstrong"
+        },
+        {
+          "program_name": "Reverse a Number",
+          "description": "Reverses the digits of a given integer using modulus and division.",
+          "instruction": "Save file as: ReverseNumber.java\nCompile: javac ReverseNumber.java\nRun: java ReverseNumber",
+          "example": "Input: 12345 → Reversed: 54321",
+          "input": "12345",
+          "code": "import java.util.Scanner;\npublic class ReverseNumber {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt(), rev = 0;\n        while (num != 0) {\n            rev = rev * 10 + num % 10;\n            num /= 10;\n        }\n        System.out.println(\"Reversed: \" + rev);\n    }\n}",
+          "output": "Enter a number: 12345\nReversed: 54321"
+        },
+        {
+          "program_name": "Check Palindrome Number",
+          "description": "A palindrome number reads the same forwards and backwards. E.g. 121, 1331.",
+          "instruction": "Save file as: PalindromeNumber.java\nCompile: javac PalindromeNumber.java\nRun: java PalindromeNumber",
+          "example": "Input: 121 → Palindrome\nInput: 123 → Not Palindrome",
+          "input": "121",
+          "code": "import java.util.Scanner;\npublic class PalindromeNumber {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt(), temp = num, rev = 0;\n        while (temp != 0) {\n            rev = rev * 10 + temp % 10;\n            temp /= 10;\n        }\n        System.out.println(num + (num == rev ? \" is Palindrome\" : \" is Not Palindrome\"));\n    }\n}",
+          "output": "Enter a number: 121\n121 is Palindrome"
+        },
+        {
+          "program_name": "Sum of Digits",
+          "description": "Finds the sum of all digits of a given number.",
+          "instruction": "Save file as: SumOfDigits.java\nCompile: javac SumOfDigits.java\nRun: java SumOfDigits",
+          "example": "Input: 1234 → Sum of digits = 10",
+          "input": "1234",
+          "code": "import java.util.Scanner;\npublic class SumOfDigits {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt(), sum = 0;\n        while (num != 0) {\n            sum += num % 10;\n            num /= 10;\n        }\n        System.out.println(\"Sum of digits = \" + sum);\n    }\n}",
+          "output": "Enter a number: 1234\nSum of digits = 10"
+        },
+        {
+          "program_name": "Count Digits",
+          "description": "Counts the number of digits in a given integer.",
+          "instruction": "Save file as: CountDigits.java\nCompile: javac CountDigits.java\nRun: java CountDigits",
+          "example": "Input: 98765 → Number of digits = 5",
+          "input": "98765",
+          "code": "import java.util.Scanner;\npublic class CountDigits {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt(), count = 0;\n        while (num != 0) {\n            count++;\n            num /= 10;\n        }\n        System.out.println(\"Number of digits = \" + count);\n    }\n}",
+          "output": "Enter a number: 98765\nNumber of digits = 5"
+        },
+        {
+          "program_name": "Power of a Number",
+          "description": "Calculates base raised to exponent (base^exp) using Math.pow() and manual loop.",
+          "instruction": "Save file as: PowerNumber.java\nCompile: javac PowerNumber.java\nRun: java PowerNumber",
+          "example": "Input: base=2, exp=10 → 2^10 = 1024",
+          "input": "2\n10",
+          "code": "import java.util.Scanner;\npublic class PowerNumber {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter base: \");\n        int base = sc.nextInt();\n        System.out.print(\"Enter exponent: \");\n        int exp = sc.nextInt();\n        long result = 1;\n        for (int i = 0; i < exp; i++) result *= base;\n        System.out.println(base + \"^\" + exp + \" = \" + result);\n    }\n}",
+          "output": "Enter base: 2\nEnter exponent: 10\n2^10 = 1024"
+        },
+        {
+          "program_name": "GCD of Two Numbers",
+          "description": "Finds the Greatest Common Divisor (GCD) of two numbers using Euclidean algorithm.",
+          "instruction": "Save file as: GCD.java\nCompile: javac GCD.java\nRun: java GCD",
+          "example": "Input: 48 18 → GCD = 6",
+          "input": "48\n18",
+          "code": "import java.util.Scanner;\npublic class GCD {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter first number: \");\n        int a = sc.nextInt();\n        System.out.print(\"Enter second number: \");\n        int b = sc.nextInt();\n        while (b != 0) {\n            int t = b;\n            b = a % b;\n            a = t;\n        }\n        System.out.println(\"GCD = \" + a);\n    }\n}",
+          "output": "Enter first number: 48\nEnter second number: 18\nGCD = 6"
+        },
+        {
+          "program_name": "LCM of Two Numbers",
+          "description": "Finds the Least Common Multiple (LCM) of two numbers using formula: LCM = (a * b) / GCD.",
+          "instruction": "Save file as: LCM.java\nCompile: javac LCM.java\nRun: java LCM",
+          "example": "Input: 4 6 → LCM = 12",
+          "input": "4\n6",
+          "code": "import java.util.Scanner;\npublic class LCM {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter first number: \");\n        int a = sc.nextInt();\n        System.out.print(\"Enter second number: \");\n        int b = sc.nextInt();\n        int gcd = a, temp = b;\n        while (temp != 0) { int t = temp; temp = gcd % temp; gcd = t; }\n        System.out.println(\"LCM = \" + (a / gcd * b));\n    }\n}",
+          "output": "Enter first number: 4\nEnter second number: 6\nLCM = 12"
+        },
+        {
+          "program_name": "Multiplication Table",
+          "description": "Prints multiplication table of a given number from 1 to 10.",
+          "instruction": "Save file as: MultiTable.java\nCompile: javac MultiTable.java\nRun: java MultiTable",
+          "example": "Input: 7 → prints 7x1=7 to 7x10=70",
+          "input": "7",
+          "code": "import java.util.Scanner;\npublic class MultiTable {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter number: \");\n        int n = sc.nextInt();\n        for (int i = 1; i <= 10; i++)\n            System.out.println(n + \" x \" + i + \" = \" + (n * i));\n    }\n}",
+          "output": "Enter number: 7\n7 x 1 = 7\n7 x 2 = 14\n...\n7 x 10 = 70"
+        },
+        {
+          "program_name": "Sum of N Natural Numbers",
+          "description": "Calculates sum of first N natural numbers using loop and also verifies with formula N*(N+1)/2.",
+          "instruction": "Save file as: SumNatural.java\nCompile: javac SumNatural.java\nRun: java SumNatural",
+          "example": "Input: 100 → Sum = 5050",
+          "input": "100",
+          "code": "import java.util.Scanner;\npublic class SumNatural {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter N: \");\n        int n = sc.nextInt();\n        int sum = n * (n + 1) / 2;\n        System.out.println(\"Sum of first \" + n + \" natural numbers = \" + sum);\n    }\n}",
+          "output": "Enter N: 100\nSum of first 100 natural numbers = 5050"
+        },
+        {
+          "program_name": "Check Leap Year",
+          "description": "Determines if a year is a leap year. A year is leap if divisible by 4, but century years must be divisible by 400.",
+          "instruction": "Save file as: LeapYear.java\nCompile: javac LeapYear.java\nRun: java LeapYear",
+          "example": "Input: 2024 → Leap Year\nInput: 1900 → Not a Leap Year\nInput: 2000 → Leap Year",
+          "input": "2024",
+          "code": "import java.util.Scanner;\npublic class LeapYear {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter year: \");\n        int year = sc.nextInt();\n        boolean leap = (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0);\n        System.out.println(year + (leap ? \" is a Leap Year\" : \" is Not a Leap Year\"));\n    }\n}",
+          "output": "Enter year: 2024\n2024 is a Leap Year"
+        },
+        {
+          "program_name": "Print ASCII Value",
+          "description": "Prints the ASCII value of a character. Each character has a unique integer ASCII code.",
+          "instruction": "Save file as: AsciiValue.java\nCompile: javac AsciiValue.java\nRun: java AsciiValue",
+          "example": "Input: A → ASCII of A = 65\nInput: a → ASCII of a = 97",
+          "input": "A",
+          "code": "import java.util.Scanner;\npublic class AsciiValue {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a character: \");\n        char ch = sc.next().charAt(0);\n        System.out.println(\"ASCII of \" + ch + \" = \" + (int) ch);\n    }\n}",
+          "output": "Enter a character: A\nASCII of A = 65"
+        },
+        {
+          "program_name": "Check Vowel or Consonant",
+          "description": "Checks if the entered character is a vowel (a, e, i, o, u) or consonant.",
+          "instruction": "Save file as: VowelCheck.java\nCompile: javac VowelCheck.java\nRun: java VowelCheck",
+          "example": "Input: e → Vowel\nInput: z → Consonant",
+          "input": "e",
+          "code": "import java.util.Scanner;\npublic class VowelCheck {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a character: \");\n        char ch = Character.toLowerCase(sc.next().charAt(0));\n        String vowels = \"aeiou\";\n        if (vowels.indexOf(ch) != -1)\n            System.out.println(ch + \" is a Vowel\");\n        else\n            System.out.println(ch + \" is a Consonant\");\n    }\n}",
+          "output": "Enter a character: e\ne is a Vowel"
+        },
+        {
+          "program_name": "Number to Words (1-10)",
+          "description": "Converts a digit (1-10) to its word form using switch-case.",
+          "instruction": "Save file as: NumberToWords.java\nCompile: javac NumberToWords.java\nRun: java NumberToWords",
+          "example": "Input: 5 → Five\nInput: 9 → Nine",
+          "input": "5",
+          "code": "import java.util.Scanner;\npublic class NumberToWords {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter number (1-10): \");\n        int n = sc.nextInt();\n        switch (n) {\n            case 1: System.out.println(\"One\"); break;\n            case 2: System.out.println(\"Two\"); break;\n            case 3: System.out.println(\"Three\"); break;\n            case 4: System.out.println(\"Four\"); break;\n            case 5: System.out.println(\"Five\"); break;\n            case 6: System.out.println(\"Six\"); break;\n            case 7: System.out.println(\"Seven\"); break;\n            case 8: System.out.println(\"Eight\"); break;\n            case 9: System.out.println(\"Nine\"); break;\n            case 10: System.out.println(\"Ten\"); break;\n            default: System.out.println(\"Out of range\");\n        }\n    }\n}",
+          "output": "Enter number (1-10): 5\nFive"
+        },
+        {
+          "program_name": "Perfect Number Check",
+          "description": "A perfect number equals the sum of its proper divisors. E.g. 6 = 1+2+3.",
+          "instruction": "Save file as: PerfectNumber.java\nCompile: javac PerfectNumber.java\nRun: java PerfectNumber",
+          "example": "Input: 6 → Perfect Number\nInput: 28 → Perfect Number\nInput: 12 → Not Perfect",
+          "input": "6",
+          "code": "import java.util.Scanner;\npublic class PerfectNumber {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt(), sum = 0;\n        for (int i = 1; i < num; i++)\n            if (num % i == 0) sum += i;\n        System.out.println(num + (sum == num ? \" is a Perfect Number\" : \" is Not a Perfect Number\"));\n    }\n}",
+          "output": "Enter a number: 6\n6 is a Perfect Number"
+        },
+        {
+          "program_name": "Strong Number Check",
+          "description": "A strong number equals the sum of factorials of its digits. E.g. 145 = 1! + 4! + 5! = 1+24+120.",
+          "instruction": "Save file as: StrongNumber.java\nCompile: javac StrongNumber.java\nRun: java StrongNumber",
+          "example": "Input: 145 → Strong Number\nInput: 123 → Not Strong",
+          "input": "145",
+          "code": "import java.util.Scanner;\npublic class StrongNumber {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt(), temp = num, sum = 0;\n        while (temp > 0) {\n            int d = temp % 10, fact = 1;\n            for (int i = 1; i <= d; i++) fact *= i;\n            sum += fact;\n            temp /= 10;\n        }\n        System.out.println(num + (sum == num ? \" is a Strong Number\" : \" is Not a Strong Number\"));\n    }\n}",
+          "output": "Enter a number: 145\n145 is a Strong Number"
+        },
+        {
+          "program_name": "Neon Number Check",
+          "description": "A neon number is one where the sum of digits of its square equals the number itself. E.g. 9: 9²=81, 8+1=9.",
+          "instruction": "Save file as: NeonNumber.java\nCompile: javac NeonNumber.java\nRun: java NeonNumber",
+          "example": "Input: 9 → Neon Number\nInput: 1 → Neon Number\nInput: 8 → Not Neon",
+          "input": "9",
+          "code": "import java.util.Scanner;\npublic class NeonNumber {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt();\n        int sq = num * num, sum = 0;\n        while (sq > 0) { sum += sq % 10; sq /= 10; }\n        System.out.println(num + (sum == num ? \" is a Neon Number\" : \" is Not a Neon Number\"));\n    }\n}",
+          "output": "Enter a number: 9\n9 is a Neon Number"
+        },
+        {
+          "program_name": "Print Factors of a Number",
+          "description": "Prints all factors (divisors) of a given number.",
+          "instruction": "Save file as: Factors.java\nCompile: javac Factors.java\nRun: java Factors",
+          "example": "Input: 12 → Factors: 1 2 3 4 6 12",
+          "input": "12",
+          "code": "import java.util.Scanner;\npublic class Factors {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt();\n        System.out.print(\"Factors: \");\n        for (int i = 1; i <= num; i++)\n            if (num % i == 0) System.out.print(i + \" \");\n    }\n}",
+          "output": "Enter a number: 12\nFactors: 1 2 3 4 6 12"
+        },
+        {
+          "program_name": "Square Root",
+          "description": "Calculates and prints the square root of a number using Math.sqrt().",
+          "instruction": "Save file as: SquareRoot.java\nCompile: javac SquareRoot.java\nRun: java SquareRoot",
+          "example": "Input: 144 → Square root = 12.0\nInput: 2 → Square root = 1.41",
+          "input": "144",
+          "code": "import java.util.Scanner;\npublic class SquareRoot {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        double num = sc.nextDouble();\n        System.out.printf(\"Square root = %.2f%n\", Math.sqrt(num));\n    }\n}",
+          "output": "Enter a number: 144\nSquare root = 12.00"
+        },
+        {
+          "program_name": "Absolute Value",
+          "description": "Finds the absolute (positive) value of a number without using Math.abs().",
+          "instruction": "Save file as: AbsoluteValue.java\nCompile: javac AbsoluteValue.java\nRun: java AbsoluteValue",
+          "example": "Input: -45 → Absolute value = 45\nInput: 12 → Absolute value = 12",
+          "input": "-45",
+          "code": "import java.util.Scanner;\npublic class AbsoluteValue {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt();\n        int abs = (num < 0) ? -num : num;\n        System.out.println(\"Absolute value = \" + abs);\n    }\n}",
+          "output": "Enter a number: -45\nAbsolute value = 45"
+        },
+        {
+          "program_name": "Binary to Decimal",
+          "description": "Converts a binary number (base 2) to its decimal (base 10) equivalent.",
+          "instruction": "Save file as: BinaryToDecimal.java\nCompile: javac BinaryToDecimal.java\nRun: java BinaryToDecimal",
+          "example": "Input: 1010 → Decimal = 10\nInput: 1111 → Decimal = 15",
+          "input": "1010",
+          "code": "import java.util.Scanner;\npublic class BinaryToDecimal {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter binary number: \");\n        int binary = sc.nextInt();\n        int decimal = 0, base = 1, temp = binary;\n        while (temp > 0) {\n            decimal += (temp % 10) * base;\n            temp /= 10;\n            base *= 2;\n        }\n        System.out.println(\"Decimal = \" + decimal);\n    }\n}",
+          "output": "Enter binary number: 1010\nDecimal = 10"
+        },
+        {
+          "program_name": "Decimal to Binary",
+          "description": "Converts a decimal number to its binary representation.",
+          "instruction": "Save file as: DecimalToBinary.java\nCompile: javac DecimalToBinary.java\nRun: java DecimalToBinary",
+          "example": "Input: 10 → Binary = 1010\nInput: 255 → Binary = 11111111",
+          "input": "10",
+          "code": "import java.util.Scanner;\npublic class DecimalToBinary {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter decimal number: \");\n        int num = sc.nextInt();\n        StringBuilder binary = new StringBuilder();\n        while (num > 0) {\n            binary.insert(0, num % 2);\n            num /= 2;\n        }\n        System.out.println(\"Binary = \" + binary);\n    }\n}",
+          "output": "Enter decimal number: 10\nBinary = 1010"
+        },
+        {
+          "program_name": "Decimal to Octal",
+          "description": "Converts a decimal number to its octal (base 8) representation.",
+          "instruction": "Save file as: DecimalToOctal.java\nCompile: javac DecimalToOctal.java\nRun: java DecimalToOctal",
+          "example": "Input: 64 → Octal = 100\nInput: 8 → Octal = 10",
+          "input": "64",
+          "code": "import java.util.Scanner;\npublic class DecimalToOctal {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter decimal number: \");\n        int num = sc.nextInt();\n        System.out.println(\"Octal = \" + Integer.toOctalString(num));\n    }\n}",
+          "output": "Enter decimal number: 64\nOctal = 100"
+        },
+        {
+          "program_name": "Decimal to Hexadecimal",
+          "description": "Converts a decimal number to hexadecimal (base 16) representation.",
+          "instruction": "Save file as: DecimalToHex.java\nCompile: javac DecimalToHex.java\nRun: java DecimalToHex",
+          "example": "Input: 255 → Hex = ff\nInput: 16 → Hex = 10",
+          "input": "255",
+          "code": "import java.util.Scanner;\npublic class DecimalToHex {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter decimal number: \");\n        int num = sc.nextInt();\n        System.out.println(\"Hexadecimal = \" + Integer.toHexString(num).toUpperCase());\n    }\n}",
+          "output": "Enter decimal number: 255\nHexadecimal = FF"
+        },
+        {
+          "program_name": "Check Automorphic Number",
+          "description": "An automorphic number is one whose square ends with the number itself. E.g. 5: 5²=25 (ends in 5).",
+          "instruction": "Save file as: Automorphic.java\nCompile: javac Automorphic.java\nRun: java Automorphic",
+          "example": "Input: 5 → Automorphic\nInput: 25 → Automorphic (625 ends in 25)\nInput: 7 → Not Automorphic",
+          "input": "5",
+          "code": "import java.util.Scanner;\npublic class Automorphic {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt();\n        int sq = num * num;\n        int digits = String.valueOf(num).length();\n        int lastDigits = (int)(sq % Math.pow(10, digits));\n        System.out.println(num + (lastDigits == num ? \" is Automorphic\" : \" is Not Automorphic\"));\n    }\n}",
+          "output": "Enter a number: 5\n5 is Automorphic"
+        },
+        {
+          "program_name": "Harshad Number Check",
+          "description": "A Harshad (Niven) number is divisible by the sum of its digits. E.g. 18: sum=9, 18/9=2.",
+          "instruction": "Save file as: HarshadNumber.java\nCompile: javac HarshadNumber.java\nRun: java HarshadNumber",
+          "example": "Input: 18 → Harshad Number\nInput: 19 → Not Harshad",
+          "input": "18",
+          "code": "import java.util.Scanner;\npublic class HarshadNumber {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt(), temp = num, sum = 0;\n        while (temp > 0) { sum += temp % 10; temp /= 10; }\n        System.out.println(num + (num % sum == 0 ? \" is a Harshad Number\" : \" is Not a Harshad Number\"));\n    }\n}",
+          "output": "Enter a number: 18\n18 is a Harshad Number"
+        },
+        {
+          "program_name": "Spy Number Check",
+          "description": "A spy number has equal sum and product of its digits. E.g. 1124: sum=8, product=8.",
+          "instruction": "Save file as: SpyNumber.java\nCompile: javac SpyNumber.java\nRun: java SpyNumber",
+          "example": "Input: 1124 → Spy Number\nInput: 123 → Not Spy",
+          "input": "1124",
+          "code": "import java.util.Scanner;\npublic class SpyNumber {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt(), temp = num, sum = 0, product = 1;\n        while (temp > 0) {\n            int d = temp % 10;\n            sum += d; product *= d;\n            temp /= 10;\n        }\n        System.out.println(num + (sum == product ? \" is a Spy Number\" : \" is Not a Spy Number\"));\n    }\n}",
+          "output": "Enter a number: 1124\n1124 is a Spy Number"
+        },
+        {
+          "program_name": "Disarium Number Check",
+          "description": "A Disarium number equals the sum of its digits raised to their positional power. E.g. 135 = 1¹+3²+5³ = 1+9+125.",
+          "instruction": "Save file as: DisariumNumber.java\nCompile: javac DisariumNumber.java\nRun: java DisariumNumber",
+          "example": "Input: 135 → Disarium Number\nInput: 89 → Disarium Number\nInput: 100 → Not Disarium",
+          "input": "135",
+          "code": "import java.util.Scanner;\npublic class DisariumNumber {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a number: \");\n        int num = sc.nextInt();\n        String s = String.valueOf(num);\n        double sum = 0;\n        for (int i = 0; i < s.length(); i++)\n            sum += Math.pow(s.charAt(i) - '0', i + 1);\n        System.out.println(num + ((int)sum == num ? \" is a Disarium Number\" : \" is Not a Disarium Number\"));\n    }\n}",
+          "output": "Enter a number: 135\n135 is a Disarium Number"
+        },
+        {
+          "program_name": "Count Even and Odd in Array",
+          "description": "Counts the number of even and odd elements in an integer array.",
+          "instruction": "Save file as: CountEvenOdd.java\nCompile: javac CountEvenOdd.java\nRun: java CountEvenOdd",
+          "example": "Array: {1,2,3,4,5,6} → Even: 3, Odd: 3",
+          "input": "",
+          "code": "public class CountEvenOdd {\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3, 4, 5, 6, 7, 8};\n        int even = 0, odd = 0;\n        for (int n : arr)\n            if (n % 2 == 0) even++; else odd++;\n        System.out.println(\"Even count = \" + even);\n        System.out.println(\"Odd count = \" + odd);\n    }\n}",
+          "output": "Even count = 4\nOdd count = 4"
+        },
+        {
+          "program_name": "Find Maximum in Array",
+          "description": "Finds the maximum element in an integer array by iterating through all elements.",
+          "instruction": "Save file as: MaxInArray.java\nCompile: javac MaxInArray.java\nRun: java MaxInArray",
+          "example": "Array: {3,7,1,9,4} → Maximum = 9",
+          "input": "",
+          "code": "public class MaxInArray {\n    public static void main(String[] args) {\n        int[] arr = {3, 7, 1, 9, 4, 15, 6};\n        int max = arr[0];\n        for (int n : arr)\n            if (n > max) max = n;\n        System.out.println(\"Maximum = \" + max);\n    }\n}",
+          "output": "Maximum = 15"
+        },
+        {
+          "program_name": "Find Minimum in Array",
+          "description": "Finds the minimum element in an integer array.",
+          "instruction": "Save file as: MinInArray.java\nCompile: javac MinInArray.java\nRun: java MinInArray",
+          "example": "Array: {3,7,1,9,4} → Minimum = 1",
+          "input": "",
+          "code": "public class MinInArray {\n    public static void main(String[] args) {\n        int[] arr = {3, 7, 1, 9, 4, 15, 6};\n        int min = arr[0];\n        for (int n : arr)\n            if (n < min) min = n;\n        System.out.println(\"Minimum = \" + min);\n    }\n}",
+          "output": "Minimum = 1"
+        },
+        {
+          "program_name": "Average of Array Elements",
+          "description": "Calculates the average of all elements in an array.",
+          "instruction": "Save file as: ArrayAverage.java\nCompile: javac ArrayAverage.java\nRun: java ArrayAverage",
+          "example": "Array: {10,20,30,40,50} → Average = 30.0",
+          "input": "",
+          "code": "public class ArrayAverage {\n    public static void main(String[] args) {\n        int[] arr = {10, 20, 30, 40, 50};\n        int sum = 0;\n        for (int n : arr) sum += n;\n        double avg = (double) sum / arr.length;\n        System.out.println(\"Sum = \" + sum);\n        System.out.println(\"Average = \" + avg);\n    }\n}",
+          "output": "Sum = 150\nAverage = 30.0"
+        },
+        {
+          "program_name": "Linear Search",
+          "description": "Searches for a target element in an array using linear search algorithm.",
+          "instruction": "Save file as: LinearSearch.java\nCompile: javac LinearSearch.java\nRun: java LinearSearch",
+          "example": "Array: {5,3,8,1,9}, target=8 → Found at index 2\ntarget=7 → Not Found",
+          "input": "",
+          "code": "public class LinearSearch {\n    public static void main(String[] args) {\n        int[] arr = {5, 3, 8, 1, 9, 2, 7};\n        int target = 8;\n        int found = -1;\n        for (int i = 0; i < arr.length; i++)\n            if (arr[i] == target) { found = i; break; }\n        if (found != -1)\n            System.out.println(target + \" found at index \" + found);\n        else\n            System.out.println(target + \" not found\");\n    }\n}",
+          "output": "8 found at index 2"
+        },
+        {
+          "program_name": "Bubble Sort",
+          "description": "Sorts an array in ascending order using bubble sort algorithm. Adjacent elements are repeatedly compared and swapped.",
+          "instruction": "Save file as: BubbleSort.java\nCompile: javac BubbleSort.java\nRun: java BubbleSort",
+          "example": "Input: {64,34,25,12,22} → Sorted: {12,22,25,34,64}",
+          "input": "",
+          "code": "import java.util.Arrays;\npublic class BubbleSort {\n    public static void main(String[] args) {\n        int[] arr = {64, 34, 25, 12, 22, 11, 90};\n        int n = arr.length;\n        for (int i = 0; i < n - 1; i++)\n            for (int j = 0; j < n - i - 1; j++)\n                if (arr[j] > arr[j + 1]) {\n                    int t = arr[j]; arr[j] = arr[j+1]; arr[j+1] = t;\n                }\n        System.out.println(\"Sorted: \" + Arrays.toString(arr));\n    }\n}",
+          "output": "Sorted: [11, 12, 22, 25, 34, 64, 90]"
+        },
+        {
+          "program_name": "Count Vowels and Consonants",
+          "description": "Counts the number of vowels and consonants in a given string.",
+          "instruction": "Save file as: CountVowels.java\nCompile: javac CountVowels.java\nRun: java CountVowels",
+          "example": "Input: Hello World → Vowels: 3, Consonants: 7",
+          "input": "Hello World",
+          "code": "import java.util.Scanner;\npublic class CountVowels {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a string: \");\n        String str = sc.nextLine().toLowerCase();\n        int vowels = 0, consonants = 0;\n        for (char c : str.toCharArray()) {\n            if (\"aeiou\".indexOf(c) != -1) vowels++;\n            else if (Character.isLetter(c)) consonants++;\n        }\n        System.out.println(\"Vowels: \" + vowels);\n        System.out.println(\"Consonants: \" + consonants);\n    }\n}",
+          "output": "Enter a string: Hello World\nVowels: 3\nConsonants: 7"
+        },
+        {
+          "program_name": "Reverse a String",
+          "description": "Reverses a given string character by character using a loop.",
+          "instruction": "Save file as: ReverseString.java\nCompile: javac ReverseString.java\nRun: java ReverseString",
+          "example": "Input: Java → Reversed: avaJ",
+          "input": "Java",
+          "code": "import java.util.Scanner;\npublic class ReverseString {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a string: \");\n        String str = sc.nextLine();\n        String rev = new StringBuilder(str).reverse().toString();\n        System.out.println(\"Reversed: \" + rev);\n    }\n}",
+          "output": "Enter a string: Java\nReversed: avaJ"
+        },
+        {
+          "program_name": "Check Palindrome String",
+          "description": "Checks if a given string reads the same forwards and backwards (case-insensitive).",
+          "instruction": "Save file as: PalindromeString.java\nCompile: javac PalindromeString.java\nRun: java PalindromeString",
+          "example": "Input: racecar → Palindrome\nInput: hello → Not Palindrome",
+          "input": "racecar",
+          "code": "import java.util.Scanner;\npublic class PalindromeString {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter a string: \");\n        String str = sc.nextLine().toLowerCase();\n        String rev = new StringBuilder(str).reverse().toString();\n        System.out.println(str + (str.equals(rev) ? \" is Palindrome\" : \" is Not Palindrome\"));\n    }\n}",
+          "output": "Enter a string: racecar\nracecar is Palindrome"
+        },
+        {
+          "program_name": "Pattern - Right Triangle",
+          "description": "Prints a right triangle star pattern using nested loops.",
+          "instruction": "Save file as: RightTriangle.java\nCompile: javac RightTriangle.java\nRun: java RightTriangle",
+          "example": "Input: 5 rows → prints * ** *** **** *****",
+          "input": "5",
+          "code": "import java.util.Scanner;\npublic class RightTriangle {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter rows: \");\n        int n = sc.nextInt();\n        for (int i = 1; i <= n; i++) {\n            for (int j = 1; j <= i; j++)\n                System.out.print(\"* \");\n            System.out.println();\n        }\n    }\n}",
+          "output": "Enter rows: 5\n* \n* * \n* * * \n* * * * \n* * * * * "
+        },
+        {
+          "program_name": "Pattern - Number Triangle",
+          "description": "Prints a number triangle pattern where each row contains increasing numbers.",
+          "instruction": "Save file as: NumberTriangle.java\nCompile: javac NumberTriangle.java\nRun: java NumberTriangle",
+          "example": "Input: 5 → prints 1 / 1 2 / 1 2 3 ...",
+          "input": "5",
+          "code": "import java.util.Scanner;\npublic class NumberTriangle {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.print(\"Enter rows: \");\n        int n = sc.nextInt();\n        for (int i = 1; i <= n; i++) {\n            for (int j = 1; j <= i; j++)\n                System.out.print(j + \" \");\n            System.out.println();\n        }\n    }\n}",
+          "output": "Enter rows: 5\n1 \n1 2 \n1 2 3 \n1 2 3 4 \n1 2 3 4 5 "
+        },
+        {
+          "program_name": "Find Second Largest in Array",
+          "description": "Finds the second largest element in an array without sorting.",
+          "instruction": "Save file as: SecondLargest.java\nCompile: javac SecondLargest.java\nRun: java SecondLargest",
+          "example": "Array: {12,35,1,10,34} → Second Largest = 34",
+          "input": "",
+          "code": "public class SecondLargest {\n    public static void main(String[] args) {\n        int[] arr = {12, 35, 1, 10, 34, 1};\n        int first = Integer.MIN_VALUE, second = Integer.MIN_VALUE;\n        for (int n : arr) {\n            if (n > first) { second = first; first = n; }\n            else if (n > second && n != first) second = n;\n        }\n        System.out.println(\"Second Largest = \" + second);\n    }\n}",
+          "output": "Second Largest = 34"
+        }
+      ]
     }
   ]
 }
