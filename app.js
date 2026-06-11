@@ -925,34 +925,58 @@ window.addEventListener('beforeunload', (e) => {
 // Practice Programs Functionality
 let practiceData = { categories: [] };
 let currentProgram = null;
+let currentCategory = null;
+
+// Progress tracking
+function getSolvedPrograms() {
+    return JSON.parse(localStorage.getItem('solvedPrograms') || '[]');
+}
+function isProgramSolved(name) {
+    return getSolvedPrograms().includes(name);
+}
+function markProgramSolved(name) {
+    const solved = getSolvedPrograms();
+    if (!solved.includes(name)) { solved.push(name); localStorage.setItem('solvedPrograms', JSON.stringify(solved)); }
+}
+function unmarkProgramSolved(name) {
+    const solved = getSolvedPrograms().filter(n => n !== name);
+    localStorage.setItem('solvedPrograms', JSON.stringify(solved));
+}
+function updateProgressBar() {
+    const allPrograms = practiceData.categories.flatMap(c => c.programs);
+    const total = allPrograms.length;
+    const solved = getSolvedPrograms().length;
+    const pct = total > 0 ? Math.round((solved / total) * 100) : 0;
+    const el = document.getElementById('progressText');
+    const fill = document.getElementById('progressFill');
+    if (el) el.textContent = `${solved} / ${total} Solved`;
+    if (fill) fill.style.width = pct + '%';
+}
 
 async function loadPracticePrograms() {
     if (practiceData.categories.length > 0) {
         renderCategories();
+        updateProgressBar();
         return;
     }
     
     try {
-        // Load config file
         const configResponse = await fetch('./programs-config.json');
         const config = await configResponse.json();
-        
-        // Load all program files
         const allCategories = [];
         for (const filePath of config.programFiles) {
             try {
                 const response = await fetch('./' + filePath);
                 const data = await response.json();
-                if (data.categories) {
-                    allCategories.push(...data.categories);
-                }
+                if (data.categories) allCategories.push(...data.categories);
             } catch (error) {
                 console.error(`Error loading ${filePath}:`, error);
             }
         }
-        
         practiceData.categories = allCategories;
         renderCategories();
+        updateProgressBar();
+        initPracticeSearch();
     } catch (error) {
         console.error('Error loading programs:', error);
         document.getElementById('practiceCategories').innerHTML = '<p style="color: #f44336; padding: 20px;">Failed to load programs</p>';
@@ -962,15 +986,15 @@ async function loadPracticePrograms() {
 function renderCategories() {
     const container = document.getElementById('practiceCategories');
     container.innerHTML = '';
-    
     practiceData.categories.forEach(category => {
+        const solved = category.programs.filter(p => isProgramSolved(p.program_name)).length;
         const card = document.createElement('div');
         card.className = 'category-card';
         card.style.setProperty('--gradient', category.gradient);
         card.innerHTML = `
             <i class="fas ${category.icon} category-icon" style="color: ${category.color};"></i>
             <div class="category-name">${category.name}</div>
-            <div class="category-count">${category.programs.length} Programs</div>
+            <div class="category-count">${category.programs.length} Programs · <span style="color:#4caf50">${solved} solved</span></div>
         `;
         card.addEventListener('click', () => showPrograms(category));
         container.appendChild(card);
@@ -978,16 +1002,16 @@ function renderCategories() {
 }
 
 function showPrograms(category) {
+    currentCategory = category;
     document.getElementById('practiceModal').classList.remove('active');
     document.getElementById('programsModal').classList.add('active');
     document.getElementById('programsModalTitle').innerHTML = `<i class="fas ${category.icon}"></i> ${category.name}`;
-    
     const container = document.getElementById('programsList');
     container.innerHTML = '';
-    
     category.programs.forEach(program => {
+        const solved = isProgramSolved(program.program_name);
         const card = document.createElement('div');
-        card.className = 'program-card';
+        card.className = 'program-card' + (solved ? ' solved' : '');
         card.innerHTML = `
             <div class="program-card-title">${program.program_name}</div>
             <div class="program-card-desc">${program.description}</div>
@@ -1001,31 +1025,129 @@ function showProgramDetail(program) {
     currentProgram = program;
     document.getElementById('programsModal').classList.remove('active');
     document.getElementById('programDetailModal').classList.add('active');
-    
     document.getElementById('programDetailTitle').textContent = program.program_name;
     document.getElementById('programDescription').textContent = program.description;
-    document.getElementById('programInstruction').textContent = program.instruction;
+    document.getElementById('programInstruction').textContent = program.instruction || '';
     document.getElementById('programCode').textContent = program.code;
     document.getElementById('programOutput').textContent = program.output;
+    // Example block
+    const exBlock = document.getElementById('programExampleBlock');
+    const exPre = document.getElementById('programExample');
+    if (program.example) { exPre.textContent = program.example; exBlock.style.display = 'block'; }
+    else { exBlock.style.display = 'none'; }
+    // Solved badge
+    const badge = document.getElementById('programSolvedBadge');
+    badge.style.display = isProgramSolved(program.program_name) ? 'inline-flex' : 'none';
+    // Mark solved button
+    const btn = document.getElementById('markSolvedBtn');
+    if (isProgramSolved(program.program_name)) {
+        btn.classList.add('marked');
+        btn.innerHTML = '<i class="fas fa-check"></i> Solved!';
+    } else {
+        btn.classList.remove('marked');
+        btn.innerHTML = '<i class="fas fa-check"></i> Mark Solved';
+    }
 }
 
 document.getElementById('loadProgramBtn').addEventListener('click', () => {
     if (currentProgram) {
-        editor.setValue(currentProgram.code, -1);
-        document.getElementById('programDetailModal').classList.remove('active');
-        
-        // Extract class name and update file name
         const classMatch = currentProgram.code.match(/public\s+class\s+(\w+)/);
         if (classMatch) {
             const className = classMatch[1];
-            document.getElementById('currentFileName').textContent = className + '.java';
-            document.getElementById('currentFileNameMobile').textContent = className + '.java';
+            const fileName = className + '.java';
+            const existingFiles = fileManager.projects.flatMap(p => p.files);
+            const existing = existingFiles.find(f => f.name === fileName);
+            if (existing) {
+                fileManager.updateFileContent(null, existing.id, currentProgram.code);
+                openFile(existing.id);
+            } else {
+                const file = fileManager.createFile(null, fileName);
+                if (file) { fileManager.updateFileContent(null, file.id, currentProgram.code); openFile(file.id); }
+            }
+            renderProjects();
+        } else {
+            editor.setValue(currentProgram.code, -1);
+            isEditorDirty = true;
+            updateSaveIndicator(false);
         }
-        
-        isEditorDirty = true;
-        updateSaveIndicator(false);
+        document.getElementById('programDetailModal').classList.remove('active');
     }
 });
+
+document.getElementById('markSolvedBtn').addEventListener('click', () => {
+    if (!currentProgram) return;
+    const name = currentProgram.program_name;
+    const btn = document.getElementById('markSolvedBtn');
+    if (isProgramSolved(name)) {
+        unmarkProgramSolved(name);
+        btn.classList.remove('marked');
+        btn.innerHTML = '<i class="fas fa-check"></i> Mark Solved';
+        document.getElementById('programSolvedBadge').style.display = 'none';
+    } else {
+        markProgramSolved(name);
+        btn.classList.add('marked');
+        btn.innerHTML = '<i class="fas fa-check"></i> Solved!';
+        document.getElementById('programSolvedBadge').style.display = 'inline-flex';
+    }
+    updateProgressBar();
+    if (currentCategory) showPrograms(currentCategory);
+});
+
+// Search functionality
+function initPracticeSearch() {
+    const input = document.getElementById('practiceSearchInput');
+    const clearBtn = document.getElementById('practiceSearchClear');
+    if (!input) return;
+    input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        clearBtn.style.display = q ? 'block' : 'none';
+        if (q.length < 1) {
+            document.getElementById('practiceSearchResults').style.display = 'none';
+            document.getElementById('practiceCategories').style.display = 'grid';
+            return;
+        }
+        document.getElementById('practiceCategories').style.display = 'none';
+        document.getElementById('practiceSearchResults').style.display = 'flex';
+        const results = [];
+        practiceData.categories.forEach(cat => {
+            cat.programs.forEach(prog => {
+                if (prog.program_name.toLowerCase().includes(q) || prog.description.toLowerCase().includes(q)) {
+                    results.push({ cat, prog });
+                }
+            });
+        });
+        const container = document.getElementById('practiceSearchResults');
+        container.innerHTML = '';
+        if (results.length === 0) {
+            container.innerHTML = '<div class="no-results"><i class="fas fa-search" style="font-size:32px;margin-bottom:12px;display:block;"></i>No programs found</div>';
+            return;
+        }
+        results.forEach(({ cat, prog }) => {
+            const item = document.createElement('div');
+            item.className = 'search-result-item';
+            item.innerHTML = `
+                <div class="search-result-category"><i class="fas ${cat.icon}"></i> ${cat.name}</div>
+                <div class="search-result-title">${prog.program_name}${isProgramSolved(prog.program_name) ? ' <span style="color:#4caf50">✓</span>' : ''}</div>
+                <div class="search-result-desc">${prog.description}</div>
+            `;
+            item.addEventListener('click', () => { currentCategory = cat; showProgramDetail(prog); });
+            container.appendChild(item);
+        });
+    });
+    clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.style.display = 'none';
+        document.getElementById('practiceSearchResults').style.display = 'none';
+        document.getElementById('practiceCategories').style.display = 'grid';
+        input.focus();
+    });
+}
+
+// Mobile code keyboard insert
+function insertSnippet(text) {
+    editor.focus();
+    editor.insert(text);
+}
 
 // Resize handle functionality for mobile
 function initializeResizeHandle() {

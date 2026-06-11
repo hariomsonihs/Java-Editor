@@ -1156,3 +1156,142 @@ body:has(#editor.ace_editor.ace-chrome) .console-modal-input input {
         padding: 16px;
     }
 }
+
+/* ===== PRACTICE SEARCH ===== */
+.practice-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-darker);
+}
+.practice-search-bar i { color: var(--text-light); font-size: 14px; flex-shrink: 0; }
+.practice-search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-white);
+    font-size: 14px;
+    padding: 4px 0;
+}
+.practice-search-bar input::placeholder { color: #666; }
+.practice-search-bar button {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 14px;
+}
+
+/* ===== PROGRESS BAR ===== */
+.practice-progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.practice-progress-bar span { font-size: 12px; color: var(--text-light); white-space: nowrap; min-width: 90px; }
+.progress-track { flex: 1; height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #4caf50, #81c784); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+
+/* ===== SEARCH RESULTS ===== */
+.practice-search-results {
+    padding: 16px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+.search-result-item {
+    background: var(--bg-darker);
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.2s;
+}
+.search-result-item:hover { background: var(--bg-dark); transform: translateX(4px); }
+.search-result-category { font-size: 11px; color: var(--primary-color); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.search-result-title { font-size: 15px; font-weight: 600; color: var(--text-white); margin-bottom: 4px; }
+.search-result-desc { font-size: 12px; color: var(--text-light); }
+.no-results { text-align: center; color: #666; padding: 40px 20px; font-size: 14px; }
+
+/* ===== SOLVED BADGE & BUTTON ===== */
+.solved-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(76,175,80,0.15);
+    border: 1px solid #4caf50;
+    color: #4caf50;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+.program-card.solved { border-left-color: #4caf50; }
+.program-card.solved .program-card-title::after { content: ' ✓'; color: #4caf50; font-size: 13px; }
+.btn-solved {
+    background: rgba(76,175,80,0.15);
+    border: 1px solid #4caf50;
+    color: #4caf50;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-solved:hover, .btn-solved.marked { background: #4caf50; color: white; }
+
+/* ===== MOBILE CODE KEYBOARD ===== */
+.code-keyboard {
+    display: none;
+    position: fixed;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    z-index: 900;
+    background: #2a2a2a;
+    border-top: 1px solid var(--border-color);
+    padding: 5px 4px;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+}
+.code-keyboard::-webkit-scrollbar { display: none; }
+.code-keyboard button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #3a3a3a;
+    border: 1px solid #555;
+    color: var(--text-white);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    min-width: 40px;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.1s;
+}
+.code-keyboard button:active { background: var(--primary-color); }
+
+@media (max-width: 768px) {
+    .code-keyboard { display: flex; }
+    .main-content { padding-bottom: calc(var(--bottom-nav-height) + 42px) !important; }
+}

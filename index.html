@@ -325,7 +325,18 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
+            <div class="practice-search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="practiceSearchInput" placeholder="Search programs..." autocomplete="off">
+                <button id="practiceSearchClear" style="display:none;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="practice-progress-bar">
+                <span id="progressText">0 / 0 Solved</span>
+                <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
             <div class="practice-categories" id="practiceCategories"></div>
+            <!-- Search Results -->
+            <div class="practice-search-results" id="practiceSearchResults" style="display:none;"></div>
         </div>
     </div>
 
@@ -358,8 +369,15 @@
                 </button>
             </div>
             <div class="program-detail-body">
+                <div id="programSolvedBadge" class="solved-badge" style="display:none;">
+                    <i class="fas fa-check-circle"></i> Solved
+                </div>
                 <div class="program-info">
                     <p id="programDescription"></p>
+                    <div id="programExampleBlock" style="display:none;">
+                        <h4>Example:</h4>
+                        <pre id="programExample"></pre>
+                    </div>
                     <pre id="programInstruction"></pre>
                 </div>
                 <div class="program-code">
@@ -370,11 +388,35 @@
                     <h4>Expected Output:</h4>
                     <pre id="programOutput"></pre>
                 </div>
-                <button class="btn-primary" id="loadProgramBtn" style="width: 100%; margin-top: 16px;">
-                    <i class="fas fa-code"></i> Load in Editor
-                </button>
+                <div style="display:flex; gap:8px; margin-top:16px;">
+                    <button class="btn-primary" id="loadProgramBtn" style="flex:1;">
+                        <i class="fas fa-code"></i> Load in Editor
+                    </button>
+                    <button class="btn-solved" id="markSolvedBtn">
+                        <i class="fas fa-check"></i> Mark Solved
+                    </button>
+                </div>
             </div>
         </div>
+    </div>
+
+    <!-- Mobile Code Keyboard Toolbar -->
+    <div class="code-keyboard" id="codeKeyboard">
+        <button onclick="insertSnippet('{')">&#123;</button>
+        <button onclick="insertSnippet('}')">&#125;</button>
+        <button onclick="insertSnippet('(')">&#40;</button>
+        <button onclick="insertSnippet(')')">&#41;</button>
+        <button onclick="insertSnippet('[')">[</button>
+        <button onclick="insertSnippet(']')">]</button>
+        <button onclick="insertSnippet(';')">;</button>
+        <button onclick="insertSnippet('"')">&quot;</button>
+        <button onclick="insertSnippet('.')">.</button>
+        <button onclick="insertSnippet('  ')" style="min-width:48px;">&#8677; Tab</button>
+        <button onclick="insertSnippet('// ')">//</button>
+        <button onclick="insertSnippet(' = ')"> = </button>
+        <button onclick="insertSnippet(' + ')"> + </button>
+        <button onclick="insertSnippet(' - ')"> - </button>
+        <button onclick="insertSnippet('\n')" style="min-width:48px;">&#8629; Enter</button>
     </div>
 
     <script>
@@ -383,7 +425,7 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js"></script>
     <script src="./file-manager.js?v=3"></script>
-    <script src="./app.js?v=21"></script>
+    <script src="./app.js?v=22"></script>
     <script>
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
