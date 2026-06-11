@@ -1,103 +1,150 @@
 {
-  "categories": [
+
+  "id": "basics",
+  "name": "Java Basics",
+  "icon": "fa-book",
+  "color": "#4CAF50",
+  "gradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  "programs": [
     {
-      "id": "basics",
-      "name": "Java Basics",
-      "icon": "fa-book",
-      "color": "#4CAF50",
-      "gradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      "programs": [
-        {
-          "program_name": "Hello World",
-          "description": "Basic Hello World program in Java",
-          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., HelloWorld.java).\nCompile: javac HelloWorld.java\nRun: java HelloWorld",
-          "code": "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, Java!\");\n    }\n}",
-          "output": "Hello, Java!"
-        },
-        {
-          "program_name": "Add Two Numbers",
-          "description": "Program to add two integers in Java",
-          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., AddTwo.java).\nCompile: javac AddTwo.java\nRun: java AddTwo",
-          "code": "public class AddTwo {\n    public static void main(String[] args) {\n        int a = 10, b = 20;\n        System.out.println(\"Sum: \" + (a + b));\n    }\n}",
-          "output": "Sum: 30"
-        },
-        {
-          "program_name": "Even or Odd",
-          "description": "Check if a number is even or odd",
-          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., EvenOdd.java).\nCompile: javac EvenOdd.java\nRun: java EvenOdd",
-          "code": "public class EvenOdd {\n    public static void main(String[] args) {\n        int num = 15;\n        if (num % 2 == 0)\n            System.out.println(num + \" is Even\");\n        else\n            System.out.println(num + \" is Odd\");\n    }\n}",
-          "output": "15 is Odd"
-        }
-      ]
+      "program_name": "Hello World",
+      "description": "Basic Hello World program",
+      "instruction": "Compile: javac HelloWorld.java\nRun: java HelloWorld",
+      "code": "public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, Java!\");\n    }\n}",
+      "output": "Hello, Java!"
     },
     {
-      "id": "loops",
-      "name": "Loops & Patterns",
-      "icon": "fa-repeat",
-      "color": "#FF9800",
-      "gradient": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-      "programs": [
-        {
-          "program_name": "Print 1 to 10",
-          "description": "Print numbers from 1 to 10 using for loop",
-          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., PrintNumbers.java).\nCompile: javac PrintNumbers.java\nRun: java PrintNumbers",
-          "code": "public class PrintNumbers {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 10; i++) {\n            System.out.println(i);\n        }\n    }\n}",
-          "output": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10"
-        },
-        {
-          "program_name": "Star Pattern",
-          "description": "Print a right triangle star pattern",
-          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., StarPattern.java).\nCompile: javac StarPattern.java\nRun: java StarPattern",
-          "code": "public class StarPattern {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 5; i++) {\n            for (int j = 1; j <= i; j++) {\n                System.out.print(\"* \");\n            }\n            System.out.println();\n        }\n    }\n}",
-          "output": "* \n* * \n* * * \n* * * * \n* * * * * "
-        }
-      ]
+      "program_name": "Print Multiple Lines",
+      "description": "Print multiple lines on screen",
+      "instruction": "Compile and run normally.",
+      "code": "public class MultipleLines {\n    public static void main(String[] args) {\n        System.out.println(\"Java\");\n        System.out.println(\"Programming\");\n        System.out.println(\"Language\");\n    }\n}",
+      "output": "Java\nProgramming\nLanguage"
     },
     {
-      "id": "arrays",
-      "name": "Arrays",
-      "icon": "fa-table-cells",
-      "color": "#2196F3",
-      "gradient": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-      "programs": [
-        {
-          "program_name": "Array Sum",
-          "description": "Calculate sum of array elements",
-          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., ArraySum.java).\nCompile: javac ArraySum.java\nRun: java ArraySum",
-          "code": "public class ArraySum {\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3, 4, 5};\n        int sum = 0;\n        for (int num : arr) {\n            sum += num;\n        }\n        System.out.println(\"Sum: \" + sum);\n    }\n}",
-          "output": "Sum: 15"
-        },
-        {
-          "program_name": "Find Maximum",
-          "description": "Find maximum element in an array",
-          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., FindMax.java).\nCompile: javac FindMax.java\nRun: java FindMax",
-          "code": "public class FindMax {\n    public static void main(String[] args) {\n        int[] arr = {12, 45, 23, 67, 34};\n        int max = arr[0];\n        for (int num : arr) {\n            if (num > max) max = num;\n        }\n        System.out.println(\"Maximum: \" + max);\n    }\n}",
-          "output": "Maximum: 67"
-        }
-      ]
+      "program_name": "Addition of Two Numbers",
+      "description": "Add two integers",
+      "instruction": "Compile and run normally.",
+      "code": "public class Addition {\n    public static void main(String[] args) {\n        int a = 10;\n        int b = 20;\n        int sum = a + b;\n        System.out.println(\"Sum = \" + sum);\n    }\n}",
+      "output": "Sum = 30"
     },
     {
-      "id": "strings",
-      "name": "Strings",
-      "icon": "fa-font",
-      "color": "#E91E63",
-      "gradient": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-      "programs": [
-        {
-          "program_name": "Reverse String",
-          "description": "Reverse a given string",
-          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., ReverseString.java).\nCompile: javac ReverseString.java\nRun: java ReverseString",
-          "code": "public class ReverseString {\n    public static void main(String[] args) {\n        String str = \"Hello\";\n        String reversed = \"\";\n        for (int i = str.length() - 1; i >= 0; i--) {\n            reversed += str.charAt(i);\n        }\n        System.out.println(\"Reversed: \" + reversed);\n    }\n}",
-          "output": "Reversed: olleH"
-        },
-        {
-          "program_name": "Palindrome Check",
-          "description": "Check if a string is palindrome",
-          "instruction": "How to Run:\nSave: File name must match the Class Name (e.g., Palindrome.java).\nCompile: javac Palindrome.java\nRun: java Palindrome",
-          "code": "public class Palindrome {\n    public static void main(String[] args) {\n        String str = \"madam\";\n        String rev = \"\";\n        for (int i = str.length() - 1; i >= 0; i--) {\n            rev += str.charAt(i);\n        }\n        if (str.equals(rev))\n            System.out.println(str + \" is Palindrome\");\n        else\n            System.out.println(str + \" is not Palindrome\");\n    }\n}",
-          "output": "madam is Palindrome"
-        }
-      ]
+      "program_name": "Subtraction",
+      "description": "Subtract two numbers",
+      "instruction": "Compile and run normally.",
+      "code": "public class Subtraction {\n    public static void main(String[] args) {\n        int a = 20;\n        int b = 5;\n        System.out.println(\"Difference = \" + (a - b));\n    }\n}",
+      "output": "Difference = 15"
+    },
+    {
+      "program_name": "Multiplication",
+      "description": "Multiply two numbers",
+      "instruction": "Compile and run normally.",
+      "code": "public class Multiplication {\n    public static void main(String[] args) {\n        int a = 5;\n        int b = 4;\n        System.out.println(\"Product = \" + (a * b));\n    }\n}",
+      "output": "Product = 20"
+    },
+    {
+      "program_name": "Division",
+      "description": "Divide two numbers",
+      "instruction": "Compile and run normally.",
+      "code": "public class Division {\n    public static void main(String[] args) {\n        int a = 20;\n        int b = 4;\n        System.out.println(\"Result = \" + (a / b));\n    }\n}",
+      "output": "Result = 5"
+    },
+    {
+      "program_name": "Find Remainder",
+      "description": "Use modulus operator",
+      "instruction": "Compile and run normally.",
+      "code": "public class Remainder {\n    public static void main(String[] args) {\n        int a = 17;\n        int b = 5;\n        System.out.println(\"Remainder = \" + (a % b));\n    }\n}",
+      "output": "Remainder = 2"
+    },
+    {
+      "program_name": "Swap Two Numbers",
+      "description": "Swap using third variable",
+      "instruction": "Compile and run normally.",
+      "code": "public class SwapNumbers {\n    public static void main(String[] args) {\n        int a = 10;\n        int b = 20;\n        int temp = a;\n        a = b;\n        b = temp;\n        System.out.println(\"a = \" + a);\n        System.out.println(\"b = \" + b);\n    }\n}",
+      "output": "a = 20\nb = 10"
+    },
+    {
+      "program_name": "Area of Rectangle",
+      "description": "Calculate area of rectangle",
+      "instruction": "Compile and run normally.",
+      "code": "public class RectangleArea {\n    public static void main(String[] args) {\n        int length = 10;\n        int width = 5;\n        System.out.println(\"Area = \" + (length * width));\n    }\n}",
+      "output": "Area = 50"
+    },
+    {
+      "program_name": "Area of Circle",
+      "description": "Calculate circle area",
+      "instruction": "Compile and run normally.",
+      "code": "public class CircleArea {\n    public static void main(String[] args) {\n        double radius = 7;\n        double area = 3.14159 * radius * radius;\n        System.out.println(\"Area = \" + area);\n    }\n}",
+      "output": "Area = 153.93791"
+    },
+    {
+      "program_name": "Check Even or Odd",
+      "description": "Determine if a number is even or odd",
+      "instruction": "Compile and run normally.",
+      "code": "public class EvenOdd {\n    public static void main(String[] args) {\n        int num = 8;\n        if(num % 2 == 0)\n            System.out.println(\"Even\");\n        else\n            System.out.println(\"Odd\");\n    }\n}",
+      "output": "Even"
+    },
+    {
+      "program_name": "Find Largest Number",
+      "description": "Find larger of two numbers",
+      "instruction": "Compile and run normally.",
+      "code": "public class LargestNumber {\n    public static void main(String[] args) {\n        int a = 50;\n        int b = 70;\n        if(a > b)\n            System.out.println(a);\n        else\n            System.out.println(b);\n    }\n}",
+      "output": "70"
+    },
+    {
+      "program_name": "Check Positive Negative",
+      "description": "Check sign of number",
+      "instruction": "Compile and run normally.",
+      "code": "public class PositiveNegative {\n    public static void main(String[] args) {\n        int num = -5;\n        if(num > 0)\n            System.out.println(\"Positive\");\n        else if(num < 0)\n            System.out.println(\"Negative\");\n        else\n            System.out.println(\"Zero\");\n    }\n}",
+      "output": "Negative"
+    },
+    {
+      "program_name": "Print Numbers 1 to 10",
+      "description": "Using for loop",
+      "instruction": "Compile and run normally.",
+      "code": "public class PrintNumbers {\n    public static void main(String[] args) {\n        for(int i=1;i<=10;i++) {\n            System.out.println(i);\n        }\n    }\n}",
+      "output": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10"
+    },
+    {
+      "program_name": "Sum of First 10 Numbers",
+      "description": "Calculate sum using loop",
+      "instruction": "Compile and run normally.",
+      "code": "public class SumNumbers {\n    public static void main(String[] args) {\n        int sum = 0;\n        for(int i=1;i<=10;i++) {\n            sum += i;\n        }\n        System.out.println(sum);\n    }\n}",
+      "output": "55"
+    },
+    {
+      "program_name": "Print Multiplication Table",
+      "description": "Print table of 5",
+      "instruction": "Compile and run normally.",
+      "code": "public class MultiplicationTable {\n    public static void main(String[] args) {\n        for(int i=1;i<=10;i++) {\n            System.out.println(\"5 x \" + i + \" = \" + (5*i));\n        }\n    }\n}",
+      "output": "5 x 1 = 5\n...\n5 x 10 = 50"
+    },
+    {
+      "program_name": "Factorial Number",
+      "description": "Find factorial using loop",
+      "instruction": "Compile and run normally.",
+      "code": "public class Factorial {\n    public static void main(String[] args) {\n        int num = 5;\n        int fact = 1;\n        for(int i=1;i<=num;i++) {\n            fact *= i;\n        }\n        System.out.println(fact);\n    }\n}",
+      "output": "120"
+    },
+    {
+      "program_name": "Reverse Number",
+      "description": "Reverse digits of number",
+      "instruction": "Compile and run normally.",
+      "code": "public class ReverseNumber {\n    public static void main(String[] args) {\n        int num = 1234;\n        int rev = 0;\n        while(num > 0) {\n            rev = rev * 10 + num % 10;\n            num /= 10;\n        }\n        System.out.println(rev);\n    }\n}",
+      "output": "4321"
+    },
+    {
+      "program_name": "Find First Digit",
+      "description": "Get first digit of number",
+      "instruction": "Compile and run normally.",
+      "code": "public class FirstDigit {\n    public static void main(String[] args) {\n        int num = 9876;\n        while(num >= 10) {\n            num /= 10;\n        }\n        System.out.println(num);\n    }\n}",
+      "output": "9"
+    },
+    {
+      "program_name": "Find Last Digit",
+      "description": "Get last digit of number",
+      "instruction": "Compile and run normally.",
+      "code": "public class LastDigit {\n    public static void main(String[] args) {\n        int num = 9876;\n        System.out.println(num % 10);\n    }\n}",
+      "output": "6"
     }
   ]
 }
