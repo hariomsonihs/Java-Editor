@@ -1,15 +1,10 @@
-const CACHE_NAME = 'java-editor-v1';
+const CACHE_NAME = 'java-editor-v4';
 const urlsToCache = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './file-manager.js',
-  './programs-config.json',
-  './java-programs/Java_1.json',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
   'https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
