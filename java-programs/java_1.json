@@ -1,5 +1,6 @@
 {
-  
+   "categories": [
+    {
   "id": "basics",
   "name": "Java Basics",
   "icon": "fa-book",
@@ -145,6 +146,8 @@
       "instruction": "Compile and run normally.",
       "code": "public class LastDigit {\n    public static void main(String[] args) {\n        int num = 9876;\n        System.out.println(num % 10);\n    }\n}",
       "output": "6"
+    }
+      ]
     }
   ]
 }
