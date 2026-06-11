@@ -1,0 +1,4 @@
+Line 109: Change to -> const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean|Byte|Short|Long)?\s*\(/g) || []).length;
+Line 135: Change to -> const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean|Byte|Short|Long)?\s*\(/g) || []).length;
+Line 149: Change to -> const inputCount = (code.match(/\.next(Line|Int|Double|Float|Boolean|Byte|Short|Long)?\s*\(/g) || []).length;
+Line 47: Remove -> if (value.trim() === '') return false;
